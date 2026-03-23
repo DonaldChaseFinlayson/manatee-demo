@@ -1,43 +1,19 @@
 /* ============================================================
-   fab.css
-   Floating action button (FAB) radial navigation and
-   contextual reset button.
-
-   The FAB lives in the lower-right corner. Tapping it fans
-   three section buttons radially upward. Each button scrolls
-   to its section and closes the menu.
-
-   The reset button appears at the bottom of whichever section
-   is currently running a demo. fab.js handles show/hide.
+   fab.css — radial FAB nav + floating refresh button
    ============================================================ */
-
-
-/* ------------------------------------------------------------
-   FAB CONTAINER
-   Fixed to lower-right. Contains the trigger and the three
-   radial items. z-index above everything else.
-   ------------------------------------------------------------ */
 
 .fab-container {
   position: fixed;
   bottom: 24px;
   right: 20px;
   z-index: 300;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-
-/* ------------------------------------------------------------
-   FAB TRIGGER
-   The main button the user taps. Shows an M by default,
-   rotates to an X when open.
-   ------------------------------------------------------------ */
-
-.fab-trigger {
   width: 52px;
   height: 52px;
+}
+
+.fab-trigger {
+  position: absolute;
+  inset: 0;
   border-radius: 50%;
   background: var(--color-teal);
   border: none;
@@ -45,139 +21,63 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 16px rgba(15, 110, 86, 0.35);
-  transition: background var(--transition-base),
-              transform var(--transition-base);
-  position: relative;
+  box-shadow: 0 4px 16px rgba(15,110,86,0.35);
+  transition: background var(--transition-base);
   z-index: 2;
 }
 
-.fab-trigger:hover {
-  background: var(--color-teal-mid);
-}
+.fab-trigger:hover { background: var(--color-teal-mid); }
+.fab-container--open .fab-trigger { background: #333; }
 
-/* The hamburger icon inside the trigger — three lines */
 .fab-trigger__icon {
-  position: absolute;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 5px;
   align-items: center;
-  justify-content: center;
-  transition: opacity var(--transition-base), transform var(--transition-base);
 }
 
 .fab-trigger__icon span {
   display: block;
   width: 18px;
   height: 2px;
-  background: #ffffff;
+  background: #fff;
   border-radius: 2px;
-  transition: transform 0.25s ease, opacity 0.25s ease, width 0.25s ease;
+  transition: transform 0.25s ease, opacity 0.25s ease;
   transform-origin: center;
 }
 
-/* Animate hamburger → X on open */
-.fab-container--open .fab-trigger__icon span:nth-child(1) {
-  transform: translateY(6px) rotate(45deg);
-}
-.fab-container--open .fab-trigger__icon span:nth-child(2) {
-  opacity: 0;
-  width: 0;
-}
-.fab-container--open .fab-trigger__icon span:nth-child(3) {
-  transform: translateY(-6px) rotate(-45deg);
-}
+.fab-container--open .fab-trigger__icon span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.fab-container--open .fab-trigger__icon span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+.fab-container--open .fab-trigger__icon span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
-
-/* ------------------------------------------------------------
-   FAB ITEMS
-   Three items positioned absolutely from the FAB center,
-   each at a different angle radiating upward-left.
-
-   Geometry (radius = 88px from FAB center, FAB is 52px):
-     Item 1 (handshake): 90°  → translate(0,       -88px)
-     Item 2 (badge):     135° → translate(-62px,    -62px)
-     Item 3 (query):     170° → translate(-87px,    -15px)
-
-   All items start at (0,0) — the FAB center — and animate
-   outward to their final positions on open.
-   ------------------------------------------------------------ */
-
-.fab-items {
-  position: absolute;
-  bottom: 26px; /* half of FAB height — items originate from center */
-  right: 26px;  /* half of FAB width */
-  width: 0;
-  height: 0;
-  pointer-events: none;
-}
-
+/* All items share the same origin — FAB center */
 .fab-item {
   position: absolute;
+  top: 6px;
+  left: 6px;
   display: flex;
   align-items: center;
   gap: 8px;
-  cursor: pointer;
   pointer-events: none;
-  white-space: nowrap;
-
-  /* All items start collapsed at the FAB center */
+  cursor: pointer;
   opacity: 0;
-  transform: translate(0, 0) scale(0.6);
-  transition: opacity 0.25s ease,
-              transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform: scale(0.5);
+  transition:
+    opacity 0.22s ease,
+    transform 0.28s cubic-bezier(0.34,1.56,0.64,1),
+    top 0.28s cubic-bezier(0.34,1.56,0.64,1),
+    left 0.28s cubic-bezier(0.34,1.56,0.64,1);
 }
 
-/* Item 1: straight up — 90° */
-.fab-item:nth-child(1) {
-  bottom: 0;
-  right: 0;
-  flex-direction: column-reverse; /* label below icon when going up */
-  align-items: center;
-  transition-delay: 0.08s;
-}
+.fab-item:nth-child(1) { transition-delay: 0.00s; flex-direction: column-reverse; align-items: center; }
+.fab-item:nth-child(2) { transition-delay: 0.04s; flex-direction: row-reverse; }
+.fab-item:nth-child(3) { transition-delay: 0.08s; flex-direction: row-reverse; }
 
-/* Item 2: upper-left diagonal — 135° */
-.fab-item:nth-child(2) {
-  bottom: 0;
-  right: 0;
-  flex-direction: row-reverse;
-  transition-delay: 0.04s;
-}
+.fab-container--open .fab-item { opacity: 1; transform: scale(1); pointer-events: all; }
+.fab-container--open .fab-item:nth-child(1) { top: -90px; left: 6px; }
+.fab-container--open .fab-item:nth-child(2) { top: -68px; left: -80px; }
+.fab-container--open .fab-item:nth-child(3) { top: 6px;   left: -110px; }
 
-/* Item 3: left — 170° */
-.fab-item:nth-child(3) {
-  bottom: 0;
-  right: 0;
-  flex-direction: row-reverse;
-  transition-delay: 0s;
-}
-
-/* Open state — each item translates to its radial position */
-.fab-container--open .fab-items {
-  pointer-events: all;
-}
-
-.fab-container--open .fab-item {
-  pointer-events: all;
-  opacity: 1;
-}
-
-/* Radial final positions */
-.fab-container--open .fab-item:nth-child(1) {
-  transform: translate(0px, -88px) scale(1);
-}
-
-.fab-container--open .fab-item:nth-child(2) {
-  transform: translate(-62px, -62px) scale(1);
-}
-
-.fab-container--open .fab-item:nth-child(3) {
-  transform: translate(-87px, -15px) scale(1);
-}
-
-/* Label pill next to each item button */
 .fab-item__label {
   font-size: 11px;
   font-weight: 500;
@@ -185,12 +85,12 @@
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-full);
-  padding: 5px 10px;
+  padding: 4px 9px;
   white-space: nowrap;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  pointer-events: none;
 }
 
-/* Circular icon button for each item */
 .fab-item__btn {
   width: 40px;
   height: 40px;
@@ -201,25 +101,19 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  transition: background var(--transition-fast),
-              border-color var(--transition-fast);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  transition: background var(--transition-fast), border-color var(--transition-fast);
 }
 
-.fab-item__btn:hover {
-  background: var(--color-teal-pale);
-  border-color: rgba(29, 158, 117, 0.3);
-}
-
-/* Active section — highlight its FAB item */
+.fab-item__btn:hover,
 .fab-item--active .fab-item__btn {
   background: var(--color-teal-pale);
-  border-color: rgba(29, 158, 117, 0.3);
+  border-color: rgba(29,158,117,0.3);
 }
 
 .fab-item--active .fab-item__label {
   color: var(--color-teal-mid);
-  border-color: rgba(29, 158, 117, 0.3);
+  border-color: rgba(29,158,117,0.3);
 }
 
 .fab-item__btn svg {
@@ -232,11 +126,8 @@
   stroke-linejoin: round;
 }
 
-.fab-item--active .fab-item__btn svg {
-  stroke: var(--color-teal-mid);
-}
+.fab-item--active .fab-item__btn svg { stroke: var(--color-teal-mid); }
 
-/* Backdrop — closes the menu when tapped outside */
 .fab-backdrop {
   position: fixed;
   inset: 0;
@@ -244,40 +135,52 @@
   display: none;
 }
 
-.fab-container--open ~ .fab-backdrop,
-.fab-backdrop--visible {
-  display: block;
-}
+.fab-backdrop--visible { display: block; }
 
-
-/* ------------------------------------------------------------
-   CONTEXTUAL RESET BUTTON
-   Appears at the bottom of whichever section ran a demo.
-   Shown/hidden by fab.js. Styled to match the section context.
-   ------------------------------------------------------------ */
-
-.section-reset {
-  display: none; /* shown by JS when demo completes */
-  width: 100%;
-  padding: 11px 0;
-  margin-top: var(--space-4);
-  border-radius: var(--radius-md);
-  font-family: var(--font-sans);
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
+/* Floating refresh button — bottom left */
+.fab-refresh {
+  position: fixed;
+  bottom: 24px;
+  left: 20px;
+  z-index: 300;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
   background: var(--color-surface);
-  color: var(--color-text-muted);
   border: 1px solid var(--color-border);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  opacity: 0;
+  transform: scale(0.7);
+  pointer-events: none;
   transition: background var(--transition-fast),
-              color var(--transition-fast);
+              opacity 0.25s ease,
+              transform 0.25s ease;
 }
 
-.section-reset:hover {
-  background: var(--color-bg);
-  color: var(--color-text);
+.fab-refresh:hover { background: var(--color-bg); }
+
+.fab-refresh svg {
+  width: 16px;
+  height: 16px;
+  stroke: var(--color-text-muted);
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: stroke var(--transition-fast);
 }
 
-.section-reset--visible {
-  display: block;
+.fab-refresh:hover svg { stroke: var(--color-text); }
+
+.fab-refresh--visible {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: all;
 }
+
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
+.fab-refresh--spinning svg { animation: spin 0.5s ease; }

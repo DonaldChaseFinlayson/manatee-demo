@@ -5,7 +5,7 @@
    ============================================================ */
 
 import { sleep, timestamp } from './utils.js';
-import { showReset, hideReset } from './fab.js';
+import { showRefresh, hideRefresh } from './fab.js';
 
 
 /* ------------------------------------------------------------
@@ -90,6 +90,7 @@ async function runQuery() {
   if (isRunning) return;
   isRunning = true;
   dom.runBtn.disabled = true;
+  showRefresh('query', resetDemo);
 
   const qKey   = dom.queryType.value;
   const q      = QUERIES[qKey];
@@ -192,7 +193,6 @@ async function runQuery() {
 
   dom.resultPanel.classList.add('query-result--visible');
   dom.privacyNote.style.display = 'block';
-  showReset('query');
 }
 
 
@@ -207,8 +207,8 @@ function resetDemo() {
   dom.terminal.innerHTML = '';
   dom.resultPanel.classList.remove('query-result--visible');
   dom.privacyNote.style.display = 'none';
-  hideReset('query');
-  dom.runBtn.disabled           = false;
+  hideRefresh('query');
+  dom.runBtn.disabled = false;
 
   // Clear result fields
   [dom.rVerified, dom.rQuery, dom.rProof, dom.rExpires, dom.rSigVerified, dom.resultTime]

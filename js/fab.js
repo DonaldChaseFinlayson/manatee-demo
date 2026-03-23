@@ -1,27 +1,22 @@
 /* ============================================================
    fab.js
-   Radial FAB navigation + contextual reset buttons.
+   Radial FAB navigation + floating refresh button.
 
-   Two responsibilities:
-   1. FAB radial menu — open/close, scroll to section, highlight
-      active section based on scroll position.
-   2. Reset coordination — showReset/hideReset called by
-      demo.js and query.js when demos start/finish.
+   showRefresh() / hideRefresh() — called by demo.js and
+   query.js when demos start and reset. The refresh button
+   tracks which section is active and resets it.
    ============================================================ */
-
-
-/* ------------------------------------------------------------
-   DOM
-   ------------------------------------------------------------ */
 
 const fabContainer = document.getElementById('fabContainer');
 const fabTrigger   = document.getElementById('fabTrigger');
 const fabBackdrop  = document.getElementById('fabBackdrop');
+const fabRefresh   = document.getElementById('fabRefresh');
 
+/* Active section for reset routing */
+let activeDemoSection = null;
+let resetCallbacks = {};
 
-/* ------------------------------------------------------------
-   OPEN / CLOSE
-   ------------------------------------------------------------ */
+/* ------ Open / Close ------ */
 
 function openFab() {
   fabContainer.classList.add('fab-container--open');
@@ -35,47 +30,31 @@ function closeFab() {
   fabTrigger.setAttribute('aria-expanded', 'false');
 }
 
-fabTrigger.addEventListener('click', () => {
-  fabContainer.classList.contains('fab-container--open') ? closeFab() : openFab();
-});
-
+fabTrigger.addEventListener('click', () =>
+  fabContainer.classList.contains('fab-container--open') ? closeFab() : openFab()
+);
 fabBackdrop.addEventListener('click', closeFab);
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeFab(); });
 
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') closeFab();
-});
-
-
-/* ------------------------------------------------------------
-   SCROLL TO SECTION
-   Each FAB item scrolls to its section and closes the menu.
-   ------------------------------------------------------------ */
+/* ------ Scroll to section ------ */
 
 document.querySelectorAll('.fab-item').forEach(item => {
   item.addEventListener('click', () => {
-    const targetId = item.getAttribute('data-target');
-    const target   = document.getElementById(targetId);
-    if (target) {
-      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    const target = document.getElementById(item.getAttribute('data-target'));
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
     closeFab();
   });
 });
 
-
-/* ------------------------------------------------------------
-   ACTIVE SECTION HIGHLIGHT
-   IntersectionObserver watches the three sections and updates
-   which FAB item appears active as the user scrolls.
-   ------------------------------------------------------------ */
+/* ------ Active section highlight ------ */
 
 const sections = document.querySelectorAll('.section[id]');
-const fabItems = document.querySelectorAll('.fab-item');
+const fabItems  = document.querySelectorAll('.fab-item');
 
-const observer = new IntersectionObserver(entries => {
+const sectionObserver = new IntersectionObserver(entries => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
-      fabItems.forEach(item => item.classList.remove('fab-item--active'));
+      fabItems.forEach(i => i.classList.remove('fab-item--active'));
       const active = document.querySelector(
         `.fab-item[data-target="${entry.target.id}"]`
       );
@@ -84,22 +63,34 @@ const observer = new IntersectionObserver(entries => {
   });
 }, { threshold: 0.4 });
 
-sections.forEach(s => observer.observe(s));
+sections.forEach(s => sectionObserver.observe(s));
 
+/* ------ Floating refresh button ------ */
 
-/* ------------------------------------------------------------
-   CONTEXTUAL RESET BUTTONS
-   Each section has a .section-reset button.
-   showReset(id) makes it visible; hideReset(id) hides it.
-   Called by demo.js and query.js at the right moments.
-   ------------------------------------------------------------ */
+fabRefresh.addEventListener('click', () => {
+  /* Spin animation */
+  fabRefresh.classList.add('fab-refresh--spinning');
+  fabRefresh.addEventListener('animationend', () => {
+    fabRefresh.classList.remove('fab-refresh--spinning');
+  }, { once: true });
 
-export function showReset(sectionId) {
-  const btn = document.querySelector(`#${sectionId} .section-reset`);
-  if (btn) btn.classList.add('section-reset--visible');
+  /* Call the active section's reset */
+  if (activeDemoSection && resetCallbacks[activeDemoSection]) {
+    resetCallbacks[activeDemoSection]();
+  }
+});
+
+/* ------ Public API ------ */
+
+export function showRefresh(sectionId, resetFn) {
+  activeDemoSection = sectionId;
+  resetCallbacks[sectionId] = resetFn;
+  fabRefresh.classList.add('fab-refresh--visible');
 }
 
-export function hideReset(sectionId) {
-  const btn = document.querySelector(`#${sectionId} .section-reset`);
-  if (btn) btn.classList.remove('section-reset--visible');
+export function hideRefresh(sectionId) {
+  if (activeDemoSection === sectionId) {
+    fabRefresh.classList.remove('fab-refresh--visible');
+    activeDemoSection = null;
+  }
 }

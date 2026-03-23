@@ -11,7 +11,7 @@
    ============================================================ */
 
 import { sleep, timestamp, animateValue, flash, setStatusRow } from './utils.js';
-import { showReset, hideReset } from './fab.js';
+import { showRefresh, hideRefresh } from './fab.js';
 
 
 /* ------------------------------------------------------------
@@ -102,6 +102,7 @@ export async function startDemo() {
 
   // Disable the tap button to prevent double-clicks
   dom.tapBtn.disabled = true;
+  showRefresh('handshake', resetDemo);
 
   // --- Step 1: Waiting for NFC handshake ---
   setStatusRow(dom.step1, 'active');
@@ -210,7 +211,6 @@ export async function startDemo() {
 
   // Swap buttons
   dom.tapBtn.classList.add('btn--hidden');
-  showReset('handshake');
 }
 
 
@@ -279,7 +279,7 @@ export function resetDemo() {
   // Swap buttons back
   dom.tapBtn.disabled = false;
   dom.tapBtn.classList.remove('btn--hidden');
-  hideReset('handshake');
+  hideRefresh('handshake');
 }
 
 

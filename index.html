@@ -67,6 +67,14 @@
   <!-- Backdrop closes the FAB menu when tapped outside -->
   <div class="fab-backdrop" id="fabBackdrop"></div>
 
+  <!-- Floating refresh button — bottom left, appears when any demo is running -->
+  <button class="fab-refresh" id="fabRefresh" aria-label="Reset demo" title="Reset demo">
+    <svg viewBox="0 0 24 24">
+      <polyline points="1 4 1 10 7 10"/>
+      <path d="M3.51 15a9 9 0 1 0 .49-4.5"/>
+    </svg>
+  </button>
+
   <div class="max-w-demo flex flex-col items-center">
 
     <!-- WORDMARK -->
@@ -232,9 +240,6 @@
           <div class="status-row__time" id="time4">—</div>
         </div>
       </div>
-
-      <!-- Reset appears here after demo runs — shown by fab.js -->
-      <button class="section-reset" id="resetBtn">Reset demo</button>
 
     </section><!-- /#handshake -->
 
@@ -501,7 +506,7 @@
         means a forged response is cryptographically impossible to fake.
       </p>
 
-      <button class="section-reset" id="resetBtn">Run another query</button>
+      <button class="btn btn--ghost" id="resetBtn" style="display:none">Run another query</button>
 
     </section><!-- /#query -->
 
