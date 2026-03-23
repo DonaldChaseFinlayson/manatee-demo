@@ -1,6 +1,6 @@
 # manatee-demo
 
-Interactive demo for the [Manatee Protocol](https://github.com/manatee-protocol).
+Interactive demo for the [Manatee Protocol](https://github.com/donaldchasefinlayson/manatee).
 
 Currently shows: NFC handshake verification flow between two users.
 
