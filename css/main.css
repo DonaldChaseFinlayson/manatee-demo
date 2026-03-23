@@ -1,0 +1,207 @@
+/* ============================================================
+   main.css
+   Global foundation: CSS custom properties (variables),
+   typography, resets, and base layout.
+
+   CSS custom properties (--var-name) let us define values
+   once and reference them everywhere. Change a color here
+   and it updates across the entire site. This is the design
+   token layer — the source of truth for the visual language.
+   ============================================================ */
+
+
+/* ------------------------------------------------------------
+   DESIGN TOKENS
+   All colors, fonts, and spacing defined once here.
+   Reference these throughout all other CSS files.
+   ------------------------------------------------------------ */
+
+:root {
+
+  /* Brand colors */
+  --color-teal:        #0F6E56;   /* Primary brand — Manatee teal */
+  --color-teal-mid:    #1D9E75;   /* Lighter teal for hovers, fills */
+  --color-teal-pale:   #E1F5EE;   /* Very light teal for backgrounds */
+  --color-teal-glow:   rgba(29, 158, 117, 0.2); /* Transparent teal for rings */
+
+  /* Neutrals */
+  --color-bg:          #F7F6F2;   /* Page background — warm off-white */
+  --color-surface:     #FFFFFF;   /* Card/panel background */
+  --color-border:      rgba(0, 0, 0, 0.08); /* Subtle border */
+  --color-text:        #1a1a18;   /* Primary text — near black, warm */
+  --color-text-muted:  #7a7870;   /* Secondary text — muted */
+  --color-text-faint:  #aaaaaa;   /* Tertiary text — very muted */
+
+  /* Phone UI colors (dark theme, intentionally hardcoded) */
+  --phone-shell:       #111110;
+  --phone-screen:      #1a1a18;
+  --phone-border:      #2a2a28;
+  --phone-text:        rgba(255, 255, 255, 0.9);
+  --phone-text-muted:  rgba(255, 255, 255, 0.32);
+  --phone-surface:     rgba(255, 255, 255, 0.08);
+
+  /* Status colors */
+  --color-verified:    #5DCAA5;   /* Verified badge text */
+  --color-verified-bg: rgba(15, 110, 86, 0.28); /* Verified badge background */
+  --color-verified-border: rgba(29, 158, 117, 0.3);
+
+  /* Typography */
+  --font-sans:   'DM Sans', system-ui, sans-serif;
+  --font-mono:   'DM Mono', 'Courier New', monospace;
+
+  /* Spacing scale — multiples of 4px */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  /* Border radius */
+  --radius-sm:   6px;
+  --radius-md:   10px;
+  --radius-lg:   14px;
+  --radius-xl:   26px;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-phone: 0 20px 40px rgba(0, 0, 0, 0.22);
+  --shadow-card:  0 1px 3px rgba(0, 0, 0, 0.06);
+
+  /* Transitions */
+  --transition-fast:   0.15s ease;
+  --transition-base:   0.3s ease;
+  --transition-slow:   0.5s ease;
+  --transition-spring: 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  --transition-score:  1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+
+/* ------------------------------------------------------------
+   RESET
+   Normalize browser defaults so we start from a clean slate.
+   box-sizing: border-box means padding and border are included
+   in an element's stated width/height — much more predictable.
+   ------------------------------------------------------------ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Remove default list styles when not needed */
+ul, ol {
+  list-style: none;
+}
+
+/* Make images responsive by default */
+img {
+  max-width: 100%;
+  display: block;
+}
+
+
+/* ------------------------------------------------------------
+   BASE
+   Body defaults and font loading.
+   ------------------------------------------------------------ */
+
+body {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--color-text);
+  background: var(--color-bg);
+
+  /* Center content vertically and horizontally */
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  padding: var(--space-8) var(--space-4) var(--space-12);
+}
+
+
+/* ------------------------------------------------------------
+   TYPOGRAPHY UTILITIES
+   Small reusable classes for text styling.
+   ------------------------------------------------------------ */
+
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+.text-muted {
+  color: var(--color-text-muted);
+}
+
+.text-faint {
+  color: var(--color-text-faint);
+}
+
+.text-teal {
+  color: var(--color-teal);
+}
+
+.text-center {
+  text-align: center;
+}
+
+.tracking-wide {
+  letter-spacing: 0.12em;
+}
+
+.tracking-wider {
+  letter-spacing: 0.18em;
+}
+
+.uppercase {
+  text-transform: uppercase;
+}
+
+
+/* ------------------------------------------------------------
+   LAYOUT UTILITIES
+   Flexbox helpers used repeatedly across components.
+   ------------------------------------------------------------ */
+
+.flex {
+  display: flex;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.gap-2 { gap: var(--space-2); }
+.gap-3 { gap: var(--space-3); }
+.gap-4 { gap: var(--space-4); }
+
+.w-full {
+  width: 100%;
+}
+
+.max-w-demo {
+  max-width: 440px;
+  width: 100%;
+}

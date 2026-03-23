@@ -1,0 +1,580 @@
+/* ============================================================
+   components.css
+   Reusable visual components: buttons, phone UI, badges,
+   status panel, score bar, NFC animation rings.
+
+   Each component section is self-contained. The component
+   knows its own appearance but not where it lives on the page
+   — layout is handled in the HTML or a separate layout file.
+   ============================================================ */
+
+
+/* ------------------------------------------------------------
+   WORDMARK
+   The small protocol identifier at the top of the demo.
+   ------------------------------------------------------------ */
+
+.wordmark {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  text-align: center;
+  margin-bottom: var(--space-5);
+}
+
+/* The teal accent letter inside the wordmark */
+.wordmark__accent {
+  color: var(--color-teal);
+}
+
+
+/* ------------------------------------------------------------
+   BUTTONS
+   Two variants: primary (dark fill) and ghost (outlined).
+   The base .btn class holds shared properties.
+   ------------------------------------------------------------ */
+
+.btn {
+  flex: 1;
+  padding: 13px 0;
+  border-radius: var(--radius-md);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition-fast),
+              opacity var(--transition-fast);
+  border: 2px solid var(--color-text);
+  /* Remove default browser focus outline — we style it ourselves */
+  outline: none;
+}
+
+/* Keyboard focus style — accessibility */
+.btn:focus-visible {
+  outline: 2px solid var(--color-teal);
+  outline-offset: 2px;
+}
+
+/* Primary: dark background, white text */
+.btn--primary {
+  background: var(--color-text);
+  color: #ffffff;
+}
+
+.btn--primary:hover {
+  background: #333333;
+}
+
+.btn--primary:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* Ghost: white background, dark text, same border */
+.btn--ghost {
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.btn--ghost:hover {
+  background: #f0efeb;
+}
+
+/* Hidden by default — JS shows/hides as needed */
+.btn--hidden {
+  display: none;
+}
+
+
+/* ------------------------------------------------------------
+   PHONE
+   The phone shell and screen container.
+   Dimensions are fixed — this is a mockup, not responsive.
+   ------------------------------------------------------------ */
+
+/* Outer wrapper: positions the phone and its label */
+.phone-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+
+  /* Spring physics on the approach/retreat animation */
+  transition: transform var(--transition-spring);
+}
+
+/* The two approach states — toggled by JS */
+.phone-wrap--left  { transform: translateX(28px); }
+.phone-wrap--right { transform: translateX(-28px); }
+
+/* Phone shell */
+.phone {
+  width: 148px;
+  height: 282px;
+  background: var(--phone-shell);
+  border-radius: var(--radius-xl);
+  border: 2px solid var(--phone-border);
+  position: relative;   /* Anchor for absolute children */
+  overflow: hidden;     /* Clip screen and effects to phone shape */
+  box-shadow: var(--shadow-phone);
+}
+
+/* Notch cutout at top of screen */
+.phone__notch {
+  width: 54px;
+  height: 16px;
+  background: var(--phone-shell);
+  border-radius: 0 0 10px 10px;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10; /* Above screen content */
+}
+
+/* Screen area — inset from phone edges */
+.phone__screen {
+  position: absolute;
+  inset: 7px;          /* Shorthand for top/right/bottom/left: 7px */
+  border-radius: 20px;
+  background: var(--phone-screen);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* App header bar */
+.phone__header {
+  padding: 18px 12px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.phone__app-name {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--phone-text);
+}
+
+/* Signal indicator dots */
+.phone__signal {
+  display: flex;
+  gap: 2px;
+}
+
+.phone__signal-dot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #ffffff;
+  opacity: 0.28;
+}
+
+.phone__signal-dot--on {
+  opacity: 0.9;
+}
+
+/* Profile area — avatar, name, badge */
+.phone__profile {
+  flex: 1; /* Take up remaining vertical space */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 0 10px;
+}
+
+/* Score area at the bottom of the screen */
+.phone__score-area {
+  padding: 6px 12px 12px;
+}
+
+.phone__score-label {
+  font-size: 7px;
+  color: rgba(255, 255, 255, 0.25);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 3px;
+}
+
+/* Score bar track */
+.phone__score-bar {
+  height: 2px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+/* Score bar fill — width animated by JS */
+.phone__score-fill {
+  height: 100%;
+  width: 0%;
+  background: var(--color-teal-mid);
+  border-radius: 2px;
+  transition: width var(--transition-score);
+}
+
+/* Score number readout */
+.phone__score-number {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  color: rgba(255, 255, 255, 0.3);
+  margin-top: 3px;
+  transition: color var(--transition-base);
+}
+
+/* When score is active/verified, light it up */
+.phone__score-number--lit {
+  color: var(--color-teal-mid);
+}
+
+
+/* ------------------------------------------------------------
+   AVATAR
+   Circular user avatar with a verification ring.
+   ------------------------------------------------------------ */
+
+.avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  font-weight: 600;
+  color: #ffffff;
+  position: relative;
+  flex-shrink: 0; /* Don't compress in flex containers */
+}
+
+/* Color variants — each user gets a distinct gradient */
+.avatar--teal   { background: linear-gradient(135deg, #1D9E75, #0F6E56); }
+.avatar--purple { background: linear-gradient(135deg, #534AB7, #3C3489); }
+
+/* Verification ring — sits outside the avatar circle */
+.avatar__ring {
+  position: absolute;
+  inset: -3px; /* Extends 3px beyond the avatar edge */
+  border-radius: 50%;
+  border: 2px solid transparent; /* Invisible by default */
+  transition: border-color var(--transition-slow),
+              box-shadow var(--transition-slow);
+}
+
+/* Active state — toggled by JS on verification */
+.avatar__ring--verified {
+  border-color: var(--color-teal-mid);
+  box-shadow: 0 0 0 2px var(--color-teal-glow);
+}
+
+
+/* ------------------------------------------------------------
+   BADGE
+   Small pill label showing verification state.
+   ------------------------------------------------------------ */
+
+.badge {
+  font-size: 7px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  text-transform: uppercase;
+  /* Smooth transition when state changes */
+  transition: background var(--transition-base),
+              color var(--transition-base),
+              border-color var(--transition-base);
+}
+
+.badge--unverified {
+  background: var(--phone-surface);
+  color: rgba(255, 255, 255, 0.28);
+  border: 1px solid transparent;
+}
+
+.badge--verified {
+  background: var(--color-verified-bg);
+  color: var(--color-verified);
+  border: 1px solid var(--color-verified-border);
+}
+
+
+/* ------------------------------------------------------------
+   PROOF PILL
+   Appears after verification to confirm ZK proof was issued.
+   Starts invisible and slides in via JS class toggle.
+   ------------------------------------------------------------ */
+
+.proof-pill {
+  font-family: var(--font-mono);
+  font-size: 7px;
+  color: var(--color-teal-mid);
+  background: rgba(15, 110, 86, 0.15);
+  padding: 2px 7px;
+  border-radius: var(--radius-full);
+
+  /* Hidden initial state */
+  opacity: 0;
+  transform: translateY(3px);
+
+  /* Animate in when .proof-pill--visible is added */
+  transition: opacity var(--transition-base),
+              transform var(--transition-base);
+}
+
+.proof-pill--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+
+/* ------------------------------------------------------------
+   NFC ANIMATION
+   Concentric rings that pulse outward during handshake.
+   Uses CSS @keyframes — no JS needed for the animation itself,
+   JS just adds/removes the .nfc-zone--active class.
+   ------------------------------------------------------------ */
+
+/* Container — covers the entire phone, centered */
+.nfc-zone {
+  position: absolute;
+  inset: 0;
+  pointer-events: none; /* Don't intercept clicks */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20; /* Above screen content */
+}
+
+/* Individual ring */
+.nfc-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1.5px solid var(--color-teal-mid);
+  opacity: 0;
+  transform: scale(0.4);
+}
+
+/* Three ring sizes — creates the concentric ripple effect */
+.nfc-ring--sm { width: 64px;  height: 64px;  }
+.nfc-ring--md { width: 106px; height: 106px; }
+.nfc-ring--lg { width: 148px; height: 148px; }
+
+/* Keyframe: scale up from center while fading out */
+@keyframes nfc-pulse {
+  0%   { opacity: 0.7; transform: scale(0.4); }
+  100% { opacity: 0;   transform: scale(1);   }
+}
+
+/* Activate rings when parent has --active modifier */
+.nfc-zone--active .nfc-ring {
+  animation: nfc-pulse 0.9s ease-out infinite;
+}
+
+/* Stagger the rings so they pulse in sequence, not simultaneously */
+.nfc-zone--active .nfc-ring--md { animation-delay: 0.22s; }
+.nfc-zone--active .nfc-ring--lg { animation-delay: 0.44s; }
+
+
+/* ------------------------------------------------------------
+   FLASH OVERLAY
+   Brief green flash on the phone when NFC tap registers.
+   Opacity toggled instantly by JS, CSS handles the fade.
+   ------------------------------------------------------------ */
+
+.phone__flash {
+  position: absolute;
+  inset: 0;
+  background: rgba(29, 158, 117, 0.16);
+  border-radius: var(--radius-xl);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-fast);
+  z-index: 30; /* Above everything */
+}
+
+
+/* ------------------------------------------------------------
+   CENTER CONNECTOR
+   The icon and label between the two phones.
+   ------------------------------------------------------------ */
+
+.connector {
+  width: 72px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+.connector__icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1.5px solid #cccccc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color var(--transition-base);
+}
+
+.connector__icon svg {
+  width: 13px;
+  height: 13px;
+  stroke: #aaaaaa;
+  fill: none;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  transition: stroke var(--transition-base);
+}
+
+/* Active state when NFC is pulsing */
+.connector__icon--active {
+  border-color: var(--color-teal-mid);
+}
+
+.connector__icon--active svg {
+  stroke: var(--color-teal-mid);
+}
+
+.connector__label {
+  font-size: 9px;
+  color: var(--color-text-faint);
+  text-align: center;
+  line-height: 1.4;
+  transition: opacity var(--transition-base);
+}
+
+.connector__label--hidden {
+  opacity: 0;
+}
+
+
+/* ------------------------------------------------------------
+   STATUS PANEL
+   Four-step verification log with timestamps.
+   ------------------------------------------------------------ */
+
+.status-panel {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: 14px 16px;
+  border: 1px solid var(--color-border);
+  width: 100%;
+  box-shadow: var(--shadow-card);
+}
+
+/* Individual status row */
+.status-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 5px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.status-row:last-child {
+  border-bottom: none;
+}
+
+/* Icon circle — color changes per state */
+.status-row__icon {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.status-row__icon svg {
+  width: 10px;
+  height: 10px;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+}
+
+.status-row__text {
+  font-size: 11px;
+  color: var(--color-text-faint);
+  flex: 1;
+  transition: color var(--transition-base);
+}
+
+.status-row__time {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: #dddddd;
+  transition: color var(--transition-base);
+}
+
+/* --- State modifiers --- */
+
+/* Pending: gray icon, faint text */
+.status-row--pending .status-row__icon {
+  background: #f1efe8;
+}
+.status-row--pending .status-row__icon svg {
+  stroke: #bbbbbb;
+}
+
+/* Active: amber icon, dark text */
+.status-row--active .status-row__icon {
+  background: #fef3c7;
+}
+.status-row--active .status-row__icon svg {
+  stroke: #d97706;
+}
+.status-row--active .status-row__text {
+  color: var(--color-text);
+  font-weight: 500;
+}
+
+/* Done: teal icon, teal text and timestamp */
+.status-row--done .status-row__icon {
+  background: var(--color-teal-pale);
+}
+.status-row--done .status-row__icon svg {
+  stroke: var(--color-teal);
+}
+.status-row--done .status-row__text {
+  color: var(--color-teal);
+  font-weight: 500;
+}
+.status-row--done .status-row__time {
+  color: var(--color-teal-mid);
+}
+
+
+/* ------------------------------------------------------------
+   FOOTER
+   Small attribution / link at the bottom of the demo.
+   ------------------------------------------------------------ */
+
+.demo-footer {
+  margin-top: var(--space-6);
+  font-size: 10px;
+  color: #bbbbbb;
+  text-align: center;
+  line-height: 1.7;
+}
+
+.demo-footer a {
+  color: var(--color-teal);
+  text-decoration: none;
+}
+
+.demo-footer a:hover {
+  text-decoration: underline;
+}
