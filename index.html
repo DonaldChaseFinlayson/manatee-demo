@@ -20,6 +20,7 @@
   <link rel="stylesheet" href="css/components.css">
   <link rel="stylesheet" href="css/feed.css">
   <link rel="stylesheet" href="css/query.css">
+  <link rel="stylesheet" href="css/fab.css">
 </head>
 
 <body>
@@ -29,24 +30,39 @@
   </button>
 
   <!--
-    NAV sits OUTSIDE .max-w-demo so position:sticky works.
-    A flex-direction:column ancestor breaks sticky — the nav
-    sticks relative to the flex container instead of the viewport.
-    Moving it to body level fixes this.
+    FAB RADIAL NAV — lower right corner.
+    Tap to open three section buttons that fan out radially.
+    fab.js handles open/close and active state.
   -->
-  <nav class="demo-nav-outer" aria-label="Demo sections">
-    <div class="demo-nav">
-      <a href="#handshake" class="demo-nav__link demo-nav__link--active">
-        NFC handshake
-      </a>
-      <a href="#badge" class="demo-nav__link">
-        Three states
-      </a>
-      <a href="#query" class="demo-nav__link">
-        Platform query
-      </a>
+  <div class="fab-container" id="fabContainer">
+    <div class="fab-items">
+      <div class="fab-item" data-target="query">
+        <span class="fab-item__label">Platform query</span>
+        <div class="fab-item__btn">
+          <svg viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+        </div>
+      </div>
+      <div class="fab-item" data-target="badge">
+        <span class="fab-item__label">Three states</span>
+        <div class="fab-item__btn">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0 1 12 0v2"/></svg>
+        </div>
+      </div>
+      <div class="fab-item fab-item--active" data-target="handshake">
+        <span class="fab-item__label">NFC handshake</span>
+        <div class="fab-item__btn">
+          <svg viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+        </div>
+      </div>
     </div>
-  </nav>
+    <button class="fab-trigger" id="fabTrigger" aria-label="Navigation" aria-expanded="false">
+      <span class="fab-trigger__label">M</span>
+      <span class="fab-trigger__close">&#x2715;</span>
+    </button>
+  </div>
+
+  <!-- Backdrop closes the FAB menu when tapped outside -->
+  <div class="fab-backdrop" id="fabBackdrop"></div>
 
   <div class="max-w-demo flex flex-col items-center">
 
@@ -70,16 +86,13 @@
 
       <!-- BUTTONS -->
       <div class="flex gap-3 w-full" style="margin-bottom: 24px;">
-        <button class="btn btn--ghost btn--hidden" id="resetBtn">
-          Reset demo
-        </button>
         <button class="btn btn--primary" id="tapBtn">
           Simulate NFC tap
         </button>
       </div>
 
       <!-- PHONE STAGE -->
-      <div class="flex items-center" style="margin-bottom: 24px; width: 100%;">
+      <div class="flex items-center justify-center" style="margin-bottom: 24px; width: 100%;">
 
         <!-- JORDAN'S PHONE -->
         <div class="phone-wrap" id="phoneWrapA">
@@ -216,6 +229,9 @@
           <div class="status-row__time" id="time4">—</div>
         </div>
       </div>
+
+      <!-- Reset appears here after demo runs — shown by fab.js -->
+      <button class="section-reset" id="resetBtn">Reset demo</button>
 
     </section><!-- /#handshake -->
 
@@ -482,7 +498,7 @@
         means a forged response is cryptographically impossible to fake.
       </p>
 
-      <button class="btn btn--ghost" id="resetBtn">Run another query</button>
+      <button class="section-reset" id="resetBtn">Run another query</button>
 
     </section><!-- /#query -->
 
@@ -506,6 +522,7 @@
     feed.js — tooltip population and nav scroll highlighting
   -->
   <script type="module" src="js/theme.js"></script>
+  <script type="module" src="js/fab.js"></script>
   <script type="module" src="js/demo.js"></script>
   <script type="module" src="js/feed.js"></script>
   <script type="module" src="js/query.js"></script>

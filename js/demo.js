@@ -11,6 +11,7 @@
    ============================================================ */
 
 import { sleep, timestamp, animateValue, flash, setStatusRow } from './utils.js';
+import { showReset, hideReset } from './fab.js';
 
 
 /* ------------------------------------------------------------
@@ -23,7 +24,6 @@ import { sleep, timestamp, animateValue, flash, setStatusRow } from './utils.js'
 const dom = {
   // Buttons
   tapBtn:   document.getElementById('tapBtn'),
-  resetBtn: document.getElementById('resetBtn'),
 
   // Phone wrappers (animated on approach/retreat)
   phoneWrapA: document.getElementById('phoneWrapA'),
@@ -210,7 +210,7 @@ export async function startDemo() {
 
   // Swap buttons
   dom.tapBtn.classList.add('btn--hidden');
-  dom.resetBtn.classList.remove('btn--hidden');
+  showReset('handshake');
 }
 
 
@@ -279,7 +279,7 @@ export function resetDemo() {
   // Swap buttons back
   dom.tapBtn.disabled = false;
   dom.tapBtn.classList.remove('btn--hidden');
-  dom.resetBtn.classList.add('btn--hidden');
+  hideReset('handshake');
 }
 
 
@@ -291,4 +291,7 @@ export function resetDemo() {
    ------------------------------------------------------------ */
 
 dom.tapBtn.addEventListener('click', startDemo);
-dom.resetBtn.addEventListener('click', resetDemo);
+
+// The reset button lives at the bottom of the section — shown by fab.js
+const handshakeReset = document.querySelector('#handshake .section-reset');
+if (handshakeReset) handshakeReset.addEventListener('click', resetDemo);

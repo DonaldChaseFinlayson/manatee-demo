@@ -5,6 +5,7 @@
    ============================================================ */
 
 import { sleep, timestamp } from './utils.js';
+import { showReset, hideReset } from './fab.js';
 
 
 /* ------------------------------------------------------------
@@ -28,7 +29,6 @@ const dom = {
   queryType:    document.getElementById('queryType'),
   queryPreview: document.getElementById('queryPreview'),
   runBtn:       document.getElementById('runBtn'),
-  resetBtn:     document.getElementById('resetBtn'),
   terminal:     document.getElementById('terminal'),
   resultPanel:  document.getElementById('resultPanel'),
   privacyNote:  document.getElementById('privacyNote'),
@@ -192,7 +192,7 @@ async function runQuery() {
 
   dom.resultPanel.classList.add('query-result--visible');
   dom.privacyNote.style.display = 'block';
-  dom.resetBtn.style.display    = 'block';
+  showReset('query');
 }
 
 
@@ -207,7 +207,7 @@ function resetDemo() {
   dom.terminal.innerHTML = '';
   dom.resultPanel.classList.remove('query-result--visible');
   dom.privacyNote.style.display = 'none';
-  dom.resetBtn.style.display    = 'none';
+  hideReset('query');
   dom.runBtn.disabled           = false;
 
   // Clear result fields
@@ -225,7 +225,9 @@ function resetDemo() {
 
 dom.queryType.addEventListener('change', updatePreview);
 dom.runBtn.addEventListener('click', runQuery);
-dom.resetBtn.addEventListener('click', resetDemo);
+
+const queryReset = document.querySelector('#query .section-reset');
+if (queryReset) queryReset.addEventListener('click', resetDemo);
 
 // Initialize preview on load
 updatePreview();
