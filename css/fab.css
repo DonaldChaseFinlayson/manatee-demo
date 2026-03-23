@@ -194,11 +194,11 @@
 }
 
 /* 12 o'clock */
-.fab-container--open .fab-item:nth-child(1) { bottom: 0px; right: 80px;  }
+.fab-container--open .fab-item:nth-child(1) { bottom: 6px; right: 86px;  }
 /* 10:30 o'clock */
-.fab-container--open .fab-item:nth-child(2) { bottom: 56px; right: 56px; }
+.fab-container--open .fab-item:nth-child(2) { bottom: 62px; right: 62px; }
 /* 9 o'clock */
-.fab-container--open .fab-item:nth-child(3) { bottom: 80px;  right: 0px; }
+.fab-container--open .fab-item:nth-child(3) { bottom: 86px;  right: 6px; }
 
 /* Label pill */
 .fab-item__label {
