@@ -1,96 +1,107 @@
 /* ============================================================
-   fab.js
-   Radial FAB navigation + floating refresh button.
-
-   showRefresh() / hideRefresh() — called by demo.js and
-   query.js when demos start and reset. The refresh button
-   tracks which section is active and resets it.
+   fab.js — radial FAB nav + floating refresh button
+   DOM lookups deferred to function calls so this module
+   can be imported before the DOM is fully ready.
    ============================================================ */
 
-const fabContainer = document.getElementById('fabContainer');
-const fabTrigger   = document.getElementById('fabTrigger');
-const fabBackdrop  = document.getElementById('fabBackdrop');
-const fabRefresh   = document.getElementById('fabRefresh');
+let _fabContainer, _fabTrigger, _fabBackdrop, _fabRefresh;
 
-/* Active section for reset routing */
+function dom() {
+  if (!_fabContainer) {
+    _fabContainer = document.getElementById('fabContainer');
+    _fabTrigger   = document.getElementById('fabTrigger');
+    _fabBackdrop  = document.getElementById('fabBackdrop');
+    _fabRefresh   = document.getElementById('fabRefresh');
+  }
+  return { fabContainer: _fabContainer, fabTrigger: _fabTrigger,
+           fabBackdrop: _fabBackdrop, fabRefresh: _fabRefresh };
+}
+
 let activeDemoSection = null;
 let resetCallbacks = {};
 
-/* ------ Open / Close ------ */
-
 function openFab() {
-  fabContainer.classList.add('fab-container--open');
-  fabBackdrop.classList.add('fab-backdrop--visible');
-  fabTrigger.setAttribute('aria-expanded', 'true');
+  const d = dom();
+  d.fabContainer.classList.add('fab-container--open');
+  d.fabBackdrop.classList.add('fab-backdrop--visible');
+  d.fabTrigger.setAttribute('aria-expanded', 'true');
 }
 
 function closeFab() {
-  fabContainer.classList.remove('fab-container--open');
-  fabBackdrop.classList.remove('fab-backdrop--visible');
-  fabTrigger.setAttribute('aria-expanded', 'false');
+  const d = dom();
+  d.fabContainer.classList.remove('fab-container--open');
+  d.fabBackdrop.classList.remove('fab-backdrop--visible');
+  d.fabTrigger.setAttribute('aria-expanded', 'false');
 }
 
-fabTrigger.addEventListener('click', () =>
-  fabContainer.classList.contains('fab-container--open') ? closeFab() : openFab()
-);
-fabBackdrop.addEventListener('click', closeFab);
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeFab(); });
+document.addEventListener('DOMContentLoaded', () => {
+  const d = dom();
 
-/* ------ Scroll to section ------ */
+  d.fabTrigger.addEventListener('click', () =>
+    d.fabContainer.classList.contains('fab-container--open') ? closeFab() : openFab()
+  );
 
-document.querySelectorAll('.fab-item').forEach(item => {
-  item.addEventListener('click', () => {
-    const target = document.getElementById(item.getAttribute('data-target'));
-    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    closeFab();
+  d.fabBackdrop.addEventListener('click', closeFab);
+
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeFab(); });
+
+  document.querySelectorAll('.fab-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const target = document.getElementById(item.getAttribute('data-target'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      closeFab();
+    });
   });
-});
 
-/* ------ Active section highlight ------ */
+  const sections = document.querySelectorAll('.section[id]');
+  const fabItems = document.querySelectorAll('.fab-item');
 
-const sections = document.querySelectorAll('.section[id]');
-const fabItems  = document.querySelectorAll('.fab-item');
+  new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        fabItems.forEach(i => i.classList.remove('fab-item--active'));
+        const active = document.querySelector(
+          `.fab-item[data-target="${entry.target.id}"]`
+        );
+        if (active) active.classList.add('fab-item--active');
+      }
+    });
+  }, { threshold: 0.4 }).observe(sections[0]);
 
-const sectionObserver = new IntersectionObserver(entries => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      fabItems.forEach(i => i.classList.remove('fab-item--active'));
-      const active = document.querySelector(
-        `.fab-item[data-target="${entry.target.id}"]`
-      );
-      if (active) active.classList.add('fab-item--active');
+  sections.forEach(s => new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        fabItems.forEach(i => i.classList.remove('fab-item--active'));
+        const active = document.querySelector(
+          `.fab-item[data-target="${entry.target.id}"]`
+        );
+        if (active) active.classList.add('fab-item--active');
+      }
+    });
+  }, { threshold: 0.4 }).observe(s));
+
+  d.fabRefresh.addEventListener('click', () => {
+    d.fabRefresh.classList.add('fab-refresh--spinning');
+    d.fabRefresh.addEventListener('animationend', () => {
+      d.fabRefresh.classList.remove('fab-refresh--spinning');
+    }, { once: true });
+    if (activeDemoSection && resetCallbacks[activeDemoSection]) {
+      resetCallbacks[activeDemoSection]();
     }
   });
-}, { threshold: 0.4 });
-
-sections.forEach(s => sectionObserver.observe(s));
-
-/* ------ Floating refresh button ------ */
-
-fabRefresh.addEventListener('click', () => {
-  /* Spin animation */
-  fabRefresh.classList.add('fab-refresh--spinning');
-  fabRefresh.addEventListener('animationend', () => {
-    fabRefresh.classList.remove('fab-refresh--spinning');
-  }, { once: true });
-
-  /* Call the active section's reset */
-  if (activeDemoSection && resetCallbacks[activeDemoSection]) {
-    resetCallbacks[activeDemoSection]();
-  }
 });
-
-/* ------ Public API ------ */
 
 export function showRefresh(sectionId, resetFn) {
   activeDemoSection = sectionId;
   resetCallbacks[sectionId] = resetFn;
-  fabRefresh.classList.add('fab-refresh--visible');
+  const d = dom();
+  if (d.fabRefresh) d.fabRefresh.classList.add('fab-refresh--visible');
 }
 
 export function hideRefresh(sectionId) {
   if (activeDemoSection === sectionId) {
-    fabRefresh.classList.remove('fab-refresh--visible');
+    const d = dom();
+    if (d.fabRefresh) d.fabRefresh.classList.remove('fab-refresh--visible');
     activeDemoSection = null;
   }
 }

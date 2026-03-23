@@ -1,6 +1,4 @@
-/* ============================================================
-   fab.css — radial FAB nav + floating refresh button
-   ============================================================ */
+/* fab.css — radial FAB nav + floating refresh */
 
 .fab-container {
   position: fixed;
@@ -25,7 +23,6 @@
   transition: background var(--transition-base);
   z-index: 2;
 }
-
 .fab-trigger:hover { background: var(--color-teal-mid); }
 .fab-container--open .fab-trigger { background: #333; }
 
@@ -34,8 +31,8 @@
   flex-direction: column;
   gap: 5px;
   align-items: center;
+  pointer-events: none;
 }
-
 .fab-trigger__icon span {
   display: block;
   width: 18px;
@@ -45,39 +42,65 @@
   transition: transform 0.25s ease, opacity 0.25s ease;
   transform-origin: center;
 }
-
 .fab-container--open .fab-trigger__icon span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
 .fab-container--open .fab-trigger__icon span:nth-child(2) { opacity: 0; transform: scaleX(0); }
 .fab-container--open .fab-trigger__icon span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
-/* All items share the same origin — FAB center */
+/*
+  FAB ITEMS
+  Each item is absolutely positioned relative to .fab-container.
+  The item is a flex row: [label] [button]
+  button is always on the right (closest to FAB corner).
+  label floats to the left naturally.
+  Items start at center of FAB and animate to radial positions.
+*/
 .fab-item {
   position: absolute;
-  top: 6px;
-  left: 6px;
+  /* Start centered on the FAB button (26 = half of 52px FAB) */
+  bottom: 6px;
+  right: 6px;
+  /* Flex row with button on right, label on left */
   display: flex;
+  flex-direction: row;
   align-items: center;
   gap: 8px;
   pointer-events: none;
   cursor: pointer;
+  white-space: nowrap;
+
   opacity: 0;
   transform: scale(0.5);
   transition:
     opacity 0.22s ease,
-    transform 0.28s cubic-bezier(0.34,1.56,0.64,1),
-    top 0.28s cubic-bezier(0.34,1.56,0.64,1),
-    left 0.28s cubic-bezier(0.34,1.56,0.64,1);
+    transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1),
+    bottom 0.28s cubic-bezier(0.34, 1.56, 0.64, 1),
+    right 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.fab-item:nth-child(1) { transition-delay: 0.00s; flex-direction: row-reverse; align-items: center; }
-.fab-item:nth-child(2) { transition-delay: 0.04s; flex-direction: row-reverse; align-items: center; }
-.fab-item:nth-child(3) { transition-delay: 0.08s; flex-direction: row-reverse; }
+/* Stagger: item 1 (nearest top) last so it feels like a fan */
+.fab-item:nth-child(1) { transition-delay: 0.08s; }
+.fab-item:nth-child(2) { transition-delay: 0.04s; }
+.fab-item:nth-child(3) { transition-delay: 0.00s; }
 
-.fab-container--open .fab-item { opacity: 1; transform: scale(1); pointer-events: all; }
-.fab-container--open .fab-item:nth-child(1) { top: -62px; left: -90px; }
-.fab-container--open .fab-item:nth-child(2) { top: -68px; left: -80px; }
-.fab-container--open .fab-item:nth-child(3) { top: 6px;   left: -110px; }
+.fab-container--open .fab-item {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: all;
+}
 
+/*
+  Radial positions — button stays anchored at right/bottom,
+  label extends further left. right/bottom values position
+  the button circle, label grows leftward automatically.
+  Item 1: straight up
+  Item 2: upper-left diagonal
+  Item 3: hard left
+*/
+.fab-container--open .fab-item:nth-child(1) { bottom: 110px; right: 6px; }
+.fab-container--open .fab-item:nth-child(2) { bottom: 76px;  right: 66px; }
+.fab-container--open .fab-item:nth-child(3) { bottom: 20px;  right: 62px; }
+
+/* Label pill */
 .fab-item__label {
   font-size: 11px;
   font-weight: 500;
@@ -85,12 +108,12 @@
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-full);
-  padding: 4px 9px;
-  white-space: nowrap;
+  padding: 4px 10px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.08);
   pointer-events: none;
 }
 
+/* Icon button — always rightmost in the flex row */
 .fab-item__btn {
   width: 40px;
   height: 40px;
@@ -104,18 +127,15 @@
   box-shadow: 0 2px 8px rgba(0,0,0,0.08);
   transition: background var(--transition-fast), border-color var(--transition-fast);
 }
-
 .fab-item__btn:hover,
 .fab-item--active .fab-item__btn {
   background: var(--color-teal-pale);
   border-color: rgba(29,158,117,0.3);
 }
-
 .fab-item--active .fab-item__label {
   color: var(--color-teal-mid);
   border-color: rgba(29,158,117,0.3);
 }
-
 .fab-item__btn svg {
   width: 14px;
   height: 14px;
@@ -125,19 +145,18 @@
   stroke-linecap: round;
   stroke-linejoin: round;
 }
-
 .fab-item--active .fab-item__btn svg { stroke: var(--color-teal-mid); }
 
+/* Backdrop */
 .fab-backdrop {
   position: fixed;
   inset: 0;
   z-index: 299;
   display: none;
 }
-
 .fab-backdrop--visible { display: block; }
 
-/* Floating refresh button — bottom left */
+/* Floating refresh — bottom left */
 .fab-refresh {
   position: fixed;
   bottom: 24px;
@@ -156,13 +175,9 @@
   opacity: 0;
   transform: scale(0.7);
   pointer-events: none;
-  transition: background var(--transition-fast),
-              opacity 0.25s ease,
-              transform 0.25s ease;
+  transition: background var(--transition-fast), opacity 0.25s ease, transform 0.25s ease;
 }
-
 .fab-refresh:hover { background: var(--color-bg); }
-
 .fab-refresh svg {
   width: 16px;
   height: 16px;
@@ -171,16 +186,9 @@
   stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
-  transition: stroke var(--transition-fast);
 }
-
 .fab-refresh:hover svg { stroke: var(--color-text); }
-
-.fab-refresh--visible {
-  opacity: 1;
-  transform: scale(1);
-  pointer-events: all;
-}
+.fab-refresh--visible { opacity: 1; transform: scale(1); pointer-events: all; }
 
 @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
 .fab-refresh--spinning svg { animation: spin 0.5s ease; }
