@@ -51,31 +51,33 @@
    Two anchor links that smooth-scroll to each demo section.
    ------------------------------------------------------------ */
 
+/*
+  NAV OUTER WRAPPER
+  Sits at the top level of the body — outside all flex containers.
+  This is what allows position: sticky to work correctly.
+  Sticky breaks when any ancestor is a flex column or has
+  overflow: hidden. Moving the nav to body level fixes that.
+*/
+.demo-nav-outer {
+  width: 100%;
+  max-width: 440px;           /* Match .max-w-demo content width */
+  padding: 0 16px;            /* Match body side padding */
+  position: sticky;
+  top: 16px;
+  z-index: 100;
+  margin: 0 auto 32px;        /* Center it, space below */
+}
+
 .demo-nav {
   display: flex;
   gap: var(--space-2);
   width: 100%;
-  margin-bottom: var(--space-8);
   border-radius: var(--radius-md);
   padding: var(--space-1);
   border: 1px solid var(--color-border);
-
-  /*
-    Sticky positioning keeps the nav visible as the user scrolls.
-    top: 16px gives breathing room from the viewport edge.
-    z-index: 100 ensures it floats above all other content.
-  */
-  position: sticky;
-  top: 16px;
-  z-index: 100;
-
-  /*
-    Semi-transparent background with blur so content scrolling
-    behind doesn't create a hard edge. rgba lets the blur show.
-  */
   background: rgba(255, 255, 255, 0.88);
   backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px); /* Safari */
+  -webkit-backdrop-filter: blur(8px);
 }
 
 .demo-nav__link {
