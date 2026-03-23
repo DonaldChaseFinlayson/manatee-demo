@@ -23,22 +23,9 @@
 
 <body>
 
-  <!--
-    NAV sits OUTSIDE the flex wrapper so position: sticky works.
-    Sticky breaks when the ancestor is a flex column — moving
-    the nav to the top level lets it stick to the viewport instead.
-    .demo-nav-outer centers it and matches the content max-width.
-  -->
-  <nav class="demo-nav-outer" aria-label="Demo sections">
-    <div class="demo-nav">
-      <a href="#handshake" class="demo-nav__link demo-nav__link--active">
-        NFC handshake
-      </a>
-      <a href="#badge" class="demo-nav__link">
-        Three states
-      </a>
-    </div>
-  </nav>
+  <button class="theme-toggle" id="themeToggle" aria-label="Switch theme" title="Switch theme">
+    <svg viewBox="0 0 24 24"></svg>
+  </button>
 
   <div class="max-w-demo flex flex-col items-center">
 
@@ -46,6 +33,24 @@
     <div class="wordmark">
       M · <span class="wordmark__accent">Manatee</span> · Protocol
     </div>
+
+    <!--
+      NAV
+      Two anchor links that smooth-scroll to each section via
+      scroll-behavior: smooth set on html in main.css.
+      feed.js updates the --active class as the user scrolls.
+    -->
+    <nav class="demo-nav" aria-label="Demo sections">
+      <a href="#handshake" class="demo-nav__link demo-nav__link--active">
+        NFC handshake
+      </a>
+      <a href="#badge" class="demo-nav__link">
+        Three states
+      </a>
+      <a href="query-demo.html" class="demo-nav__link">
+        Platform query
+      </a>
+    </nav>
 
 
     <!-- ======================================================
@@ -383,6 +388,7 @@
     demo.js — NFC handshake animation
     feed.js — tooltip population and nav scroll highlighting
   -->
+  <script type="module" src="js/theme.js"></script>
   <script type="module" src="js/demo.js"></script>
   <script type="module" src="js/feed.js"></script>
 

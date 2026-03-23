@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manatee Protocol — Platform Query Demo</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/query.css">
+</head>
+
+<body>
+
+  <!-- THEME TOGGLE — shared across all demo pages -->
+  <button class="theme-toggle" id="themeToggle" aria-label="Switch theme" title="Switch theme">
+    <svg viewBox="0 0 24 24"></svg>
+  </button>
+
+  <!-- NAV -->
+  <nav class="demo-nav-outer" aria-label="Demo sections">
+    <div class="demo-nav">
+      <a href="index.html" class="demo-nav__link">NFC handshake</a>
+      <a href="index.html#badge" class="demo-nav__link">Three states</a>
+      <a href="query-demo.html" class="demo-nav__link demo-nav__link--active">Platform query</a>
+    </div>
+  </nav>
+
+  <div class="max-w-demo flex flex-col items-center">
+
+    <div class="wordmark">
+      M · <span class="wordmark__accent">Manatee</span> · Protocol
+    </div>
+
+    <div class="section__heading">
+      Platform <span>query</span> demo
+    </div>
+    <p class="section__subtitle">
+      what the platform sends · what the device returns · what stays private
+    </p>
+
+    <!--
+      TWO-COLUMN LAYOUT
+      Left: platform request fields and query builder
+      Right: user device fields showing what the platform never sees
+    -->
+    <div class="query-layout">
+
+      <!-- PLATFORM PANEL -->
+      <div class="query-panel">
+        <div class="query-panel__header">
+          <div class="query-panel__dot query-panel__dot--blue"></div>
+          <div class="query-panel__title">Platform request</div>
+        </div>
+        <div class="query-panel__body">
+          <div class="qfield-label">Platform</div>
+          <div class="qfield-value">forum.example.com</div>
+
+          <div class="qfield-label">API key</div>
+          <div class="qfield-value">mk_live_••••••••3f9a</div>
+
+          <div class="qfield-label">Query type</div>
+          <!--
+            Changing the select updates the query preview below
+            and the terminal command via updatePreview() in query.js
+          -->
+          <select id="queryType" class="qfield-select">
+            <option value="tier">Tier check — is user Tier 3+?</option>
+            <option value="score">Score threshold — E[trust] above 0.7?</option>
+            <option value="nfc">NFC minimum — 5+ handshakes?</option>
+          </select>
+
+          <div class="qfield-label">Session token</div>
+          <div class="qfield-value qfield-value--tiny">sess_7f3a9c2b1d8e4f6a0b5c3d2e1f9a8b7c</div>
+
+          <div class="qfield-label">Query preview</div>
+          <!--
+            Updated dynamically by query.js whenever queryType changes
+          -->
+          <div class="query-preview" id="queryPreview"></div>
+        </div>
+      </div>
+
+      <!-- DEVICE PANEL -->
+      <div class="query-panel">
+        <div class="query-panel__header">
+          <div class="query-panel__dot query-panel__dot--teal"></div>
+          <div class="query-panel__title">User device</div>
+        </div>
+        <div class="query-panel__body">
+          <div class="qfield-label">Account</div>
+          <div class="qfield-value">@jordanm</div>
+
+          <div class="qfield-label">Trust score</div>
+          <div class="qfield-value qfield-value--teal">
+            E[trust] = 0.742
+            <span class="qfield-aside">on-device only</span>
+          </div>
+
+          <div class="qfield-label">Current tier</div>
+          <div class="qfield-value qfield-value--teal">Tier 3 — Verified citizen</div>
+
+          <div class="qfield-label">NFC handshakes</div>
+          <div class="qfield-value qfield-value--teal">14 verified</div>
+
+          <div class="qfield-label">What platform receives</div>
+          <div class="qfield-value qfield-value--private">
+            None of the above.<br>
+            Only the signed ZK proof.
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /query-layout -->
+
+    <!-- RUN BUTTON -->
+    <button class="btn btn--primary" id="runBtn">
+      Send verification query
+    </button>
+
+    <!--
+      TERMINAL
+      Lines are appended by query.js as the animation progresses.
+      Each line fades in individually via the .term-line--visible class.
+    -->
+    <div class="query-terminal" id="terminal"></div>
+
+    <!--
+      RESULT PANEL
+      Hidden until the query completes. query.js adds .query-result--visible
+      and populates the field values.
+    -->
+    <div class="query-result" id="resultPanel">
+      <div class="query-result__header">
+        <div class="query-result__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 6L9 17l-5-5"/>
+          </svg>
+        </div>
+        <div>
+          <div class="query-result__title">Verification passed</div>
+          <div class="query-result__sub">Human verified · access granted</div>
+        </div>
+        <div class="query-result__time" id="resultTime">—</div>
+      </div>
+
+      <div class="query-result__body">
+        <div class="query-result__row">
+          <span class="query-result__key">verified</span>
+          <span class="query-result__val query-result__val--teal" id="rVerified">—</span>
+        </div>
+        <div class="query-result__row">
+          <span class="query-result__key">query</span>
+          <span class="query-result__val" id="rQuery">—</span>
+        </div>
+        <div class="query-result__row">
+          <span class="query-result__key">proof_id</span>
+          <span class="query-result__val query-result__val--muted" id="rProof">—</span>
+        </div>
+        <div class="query-result__row">
+          <span class="query-result__key">expires</span>
+          <span class="query-result__val query-result__val--muted" id="rExpires">—</span>
+        </div>
+        <div class="query-result__row">
+          <span class="query-result__key">score_disclosed</span>
+          <span class="query-result__val query-result__val--muted">false</span>
+        </div>
+        <div class="query-result__row">
+          <span class="query-result__key">data_retained</span>
+          <span class="query-result__val query-result__val--muted">false</span>
+        </div>
+      </div>
+
+      <!--
+        SIGNATURE ROW
+        Highlighted separately to emphasize that this is the
+        anti-forgery mechanism. The note explains why it matters.
+      -->
+      <div class="query-result__sig-row">
+        <div class="query-result__sig-label">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+          signature_verified
+          <span class="query-result__sig-note">
+            — platform checks proof against Manatee public key.
+            A forged "verified: true" fails here.
+          </span>
+        </div>
+        <div class="query-result__sig-val" id="rSigVerified">—</div>
+      </div>
+    </div><!-- /query-result -->
+
+    <!-- PRIVACY NOTE — appears after query completes -->
+    <p class="query-privacy-note" id="privacyNote">
+      <strong>The platform received exactly one bit of information.</strong><br>
+      Score, tier, and handshake count remain on-device. The signature check
+      means a forged response is cryptographically impossible to fake.
+    </p>
+
+    <button class="btn btn--ghost" id="resetBtn">Run another query</button>
+
+    <!-- FOOTER -->
+    <div class="demo-footer">
+      Manatee Protocol — pre-launch working draft<br>
+      <a href="https://github.com/donaldchasefinlayson/manatee" target="_blank" rel="noopener">
+        github.com/donaldchasefinlayson/manatee
+      </a>
+      · open specification · dual licensed
+    </div>
+
+  </div><!-- /max-w-demo -->
+
+  <script type="module" src="js/theme.js"></script>
+  <script type="module" src="js/query.js"></script>
+
+</body>
+</html>

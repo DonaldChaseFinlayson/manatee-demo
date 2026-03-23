@@ -1,0 +1,406 @@
+/* ============================================================
+   query.css
+   Styles specific to query-demo.html.
+   Depends on main.css for design tokens.
+   ============================================================ */
+
+
+/* ------------------------------------------------------------
+   SECTION HEADING
+   Reused from the main demo page style.
+   ------------------------------------------------------------ */
+
+.section__heading {
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--color-text);
+  text-align: center;
+  margin-bottom: var(--space-2);
+}
+
+.section__heading span {
+  color: var(--color-teal-mid);
+}
+
+.section__subtitle {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  text-align: center;
+  margin-bottom: var(--space-8);
+  letter-spacing: 0.04em;
+}
+
+
+/* ------------------------------------------------------------
+   TWO-COLUMN QUERY LAYOUT
+   Side-by-side platform and device panels.
+   ------------------------------------------------------------ */
+
+.query-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+  width: 100%;
+  margin-bottom: var(--space-3);
+}
+
+
+/* ------------------------------------------------------------
+   QUERY PANEL
+   Individual panel card for platform or device info.
+   ------------------------------------------------------------ */
+
+.query-panel {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  overflow: hidden;
+}
+
+.query-panel__header {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.query-panel__title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.query-panel__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.query-panel__dot--blue { background: #378ADD; }
+.query-panel__dot--teal { background: var(--color-teal-mid); }
+
+.query-panel__body {
+  padding: 14px;
+}
+
+
+/* ------------------------------------------------------------
+   QUERY FIELDS
+   Label + value pairs inside the panels.
+   ------------------------------------------------------------ */
+
+.qfield-label {
+  font-size: 10px;
+  color: var(--color-text-faint);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+
+.qfield-value {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-text);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 6px 9px;
+  margin-bottom: 10px;
+  line-height: 1.5;
+}
+
+.qfield-value--teal {
+  color: var(--color-teal-mid);
+}
+
+.qfield-value--tiny {
+  font-size: 9px;
+  word-break: break-all;
+  color: var(--color-text-faint);
+}
+
+.qfield-value--private {
+  font-size: 10px;
+  color: var(--color-text-faint);
+  line-height: 1.6;
+}
+
+/* Small aside text inside a field value */
+.qfield-aside {
+  font-size: 9px;
+  color: var(--color-text-faint);
+  margin-left: var(--space-1);
+}
+
+.qfield-select {
+  width: 100%;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 6px 9px;
+  color: var(--color-text);
+  cursor: pointer;
+  margin-bottom: 10px;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+/* Query JSON preview block */
+.query-preview {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  color: var(--color-text-muted);
+  line-height: 1.7;
+}
+
+.query-preview .qs {
+  color: var(--color-teal-mid);
+  font-weight: 500;
+}
+
+
+/* ------------------------------------------------------------
+   BUTTONS
+   Reuse .btn from components.css but need margin here.
+   ------------------------------------------------------------ */
+
+.btn {
+  width: 100%;
+  padding: 12px 0;
+  border-radius: var(--radius-md);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition-fast), opacity var(--transition-fast);
+  margin-bottom: 0;
+}
+
+.btn--primary {
+  background: var(--color-teal);
+  color: #ffffff;
+  border: 2px solid var(--color-teal);
+  margin-bottom: var(--space-1);
+}
+
+.btn--primary:hover { background: var(--color-teal-mid); border-color: var(--color-teal-mid); }
+.btn--primary:disabled { opacity: 0.35; cursor: not-allowed; }
+
+.btn--ghost {
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
+  display: none;
+  margin-top: var(--space-3);
+}
+
+.btn--ghost:hover { color: var(--color-text); }
+
+
+/* ------------------------------------------------------------
+   TERMINAL
+   Dark-themed scrolling log of verification steps.
+   ------------------------------------------------------------ */
+
+.query-terminal {
+  width: 100%;
+  background: #111110;
+  border-radius: var(--radius-lg);
+  padding: 14px 16px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.8;
+  min-height: 120px;
+  margin: var(--space-3) 0;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* Individual terminal line — fades in when .term-line--visible is added */
+.term-line {
+  color: #e8e6e0;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.term-line--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Syntax color classes */
+.term-prompt  { color: #555555; }
+.term-cmd     { color: #5DCAA5; }
+.term-key     { color: #5DCAA5; }
+.term-str     { color: #FAC775; }
+.term-true    { color: #97C459; font-weight: 600; }
+.term-false   { color: #F09595; font-weight: 600; }
+.term-dim     { color: #444441; }
+.term-comment { color: #444441; font-style: italic; }
+
+
+/* ------------------------------------------------------------
+   RESULT PANEL
+   Appears after a successful query. Hidden by default.
+   ------------------------------------------------------------ */
+
+.query-result {
+  width: 100%;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+  margin-bottom: var(--space-3);
+}
+
+.query-result--visible {
+  opacity: 1;
+  transform: translateY(0);
+  border-color: rgba(29, 158, 117, 0.3);
+}
+
+.query-result__header {
+  padding: 12px 16px;
+  background: var(--color-teal-pale);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.query-result__icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--color-teal-mid);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.query-result__icon svg {
+  width: 14px;
+  height: 14px;
+}
+
+.query-result__title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-teal-mid);
+}
+
+.query-result__sub {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  margin-top: 1px;
+}
+
+.query-result__time {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-text-muted);
+  margin-left: auto;
+}
+
+.query-result__body {
+  padding: 12px 16px;
+  background: var(--color-surface);
+}
+
+.query-result__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 0;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 11px;
+}
+
+.query-result__row:last-child { border-bottom: none; }
+
+.query-result__key { color: var(--color-text-muted); }
+
+.query-result__val {
+  font-family: var(--font-mono);
+  color: var(--color-text);
+}
+
+.query-result__val--teal  { color: var(--color-teal-mid); font-weight: 500; }
+.query-result__val--muted { color: var(--color-text-faint); }
+
+/* Signature verification row — highlighted separately */
+.query-result__sig-row {
+  background: var(--color-teal-pale);
+  border-top: 1px solid rgba(29, 158, 117, 0.15);
+  padding: 8px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-2);
+  font-size: 11px;
+  flex-wrap: wrap;
+}
+
+.query-result__sig-label {
+  color: var(--color-text-muted);
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.query-result__sig-label svg {
+  width: 11px;
+  height: 11px;
+  stroke: var(--color-teal-mid);
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.query-result__sig-note {
+  font-size: 10px;
+  color: var(--color-text-faint);
+  font-style: italic;
+}
+
+.query-result__sig-val {
+  font-family: var(--font-mono);
+  color: var(--color-teal-mid);
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+
+/* ------------------------------------------------------------
+   PRIVACY NOTE
+   Appears below the result panel after query completes.
+   ------------------------------------------------------------ */
+
+.query-privacy-note {
+  font-size: 11px;
+  color: var(--color-text-faint);
+  text-align: center;
+  line-height: 1.6;
+  display: none;
+  margin-bottom: var(--space-3);
+}
+
+.query-privacy-note strong {
+  color: var(--color-text-muted);
+}

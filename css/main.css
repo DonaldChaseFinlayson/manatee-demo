@@ -96,20 +96,69 @@
 }
 
 /* Smooth scrolling for anchor link navigation */
+/*
+  DARK MODE TOKENS
+  When the <html> element has data-theme="dark" (set by theme.js),
+  these values override the :root defaults above.
+  Every component uses the variables, so they all update automatically.
+  We use data-theme rather than @media (prefers-color-scheme) so the
+  manual toggle controls it rather than the OS preference.
+*/
+[data-theme="dark"] {
+  --color-bg:         #1a1a18;
+  --color-surface:    #242422;
+  --color-border:     rgba(255, 255, 255, 0.08);
+  --color-text:       #e8e6e0;
+  --color-text-muted: #7a7870;
+  --color-text-faint: #444441;
+  --color-teal-pale:  rgba(15, 110, 86, 0.2);
+}
+
+
+/*
+  THEME TOGGLE BUTTON
+  Fixed position in the top-right corner, visible on all pages.
+  Uses an SVG sun/moon icon swapped by theme.js.
+*/
+.theme-toggle {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 200;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--transition-base), border-color var(--transition-base);
+}
+
+.theme-toggle:hover {
+  background: var(--color-bg);
+}
+
+.theme-toggle svg {
+  width: 16px;
+  height: 16px;
+  stroke: var(--color-text-muted);
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: stroke var(--transition-base);
+}
+
+.theme-toggle:hover svg {
+  stroke: var(--color-text);
+}
+
+
 html {
   scroll-behavior: smooth;
-
-  /*
-    scroll-padding-top solves the sticky nav jump problem.
-    When a nav link is clicked, the browser scrolls the target
-    section to the top of the viewport — which puts it UNDER
-    the sticky nav. scroll-padding-top tells the browser to
-    treat the top 80px as off-limits for scroll targets.
-
-    80px = nav height (~48px) + 16px top offset + 16px breathing room.
-    Adjust if the nav height changes.
-  */
-  scroll-padding-top: 80px;
 }
 
 /* Remove default list styles when not needed */
