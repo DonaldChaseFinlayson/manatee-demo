@@ -215,7 +215,7 @@
   pointer-events: none;
 }
 /* Show on hover - desktop */
-.fab-item:hover .fab-item__label
+.fab-item:hover .fab-item__label{
   opacity: 1;
 }
 /* Always show label on mobile touch devices */
