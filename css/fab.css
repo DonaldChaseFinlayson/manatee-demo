@@ -61,7 +61,7 @@
   right: 6px;
   /* Flex row with button on right, label on left */
   display: flex;
-  flex-direction: row;
+  flex-direction: row-reverse;
   align-items: center;
   gap: 8px;
   pointer-events: none;
@@ -96,7 +96,7 @@
   Item 2: upper-left diagonal
   Item 3: hard left
 */
-.fab-container--open .fab-item:nth-child(1) { bottom: 110px; right: 6px; }
+.fab-container--open .fab-item:nth-child(1) { bottom: 100px; right: 6px; }
 .fab-container--open .fab-item:nth-child(2) { bottom: 76px;  right: 66px; }
 .fab-container--open .fab-item:nth-child(3) { bottom: 20px;  right: 62px; }
 
