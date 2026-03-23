@@ -19,6 +19,7 @@
   <link rel="stylesheet" href="css/main.css">
   <link rel="stylesheet" href="css/components.css">
   <link rel="stylesheet" href="css/feed.css">
+  <link rel="stylesheet" href="css/query.css">
 </head>
 
 <body>
@@ -27,30 +28,32 @@
     <svg viewBox="0 0 24 24"></svg>
   </button>
 
-  <div class="max-w-demo flex flex-col items-center">
-
-    <!-- WORDMARK -->
-    <div class="wordmark">
-      M · <span class="wordmark__accent">Manatee</span> · Protocol
-    </div>
-
-    <!--
-      NAV
-      Two anchor links that smooth-scroll to each section via
-      scroll-behavior: smooth set on html in main.css.
-      feed.js updates the --active class as the user scrolls.
-    -->
-    <nav class="demo-nav" aria-label="Demo sections">
+  <!--
+    NAV sits OUTSIDE .max-w-demo so position:sticky works.
+    A flex-direction:column ancestor breaks sticky — the nav
+    sticks relative to the flex container instead of the viewport.
+    Moving it to body level fixes this.
+  -->
+  <nav class="demo-nav-outer" aria-label="Demo sections">
+    <div class="demo-nav">
       <a href="#handshake" class="demo-nav__link demo-nav__link--active">
         NFC handshake
       </a>
       <a href="#badge" class="demo-nav__link">
         Three states
       </a>
-      <a href="query-demo.html" class="demo-nav__link">
+      <a href="#query" class="demo-nav__link">
         Platform query
       </a>
-    </nav>
+    </div>
+  </nav>
+
+  <div class="max-w-demo flex flex-col items-center">
+
+    <!-- WORDMARK -->
+    <div class="wordmark">
+      M · <span class="wordmark__accent">Manatee</span> · Protocol
+    </div>
 
 
     <!-- ======================================================
@@ -370,6 +373,120 @@
     </section><!-- /#badge -->
 
 
+    <!-- SECTION DIVIDER -->
+    <div class="section__divider"></div>
+
+
+    <!-- ======================================================
+         SECTION 3: PLATFORM QUERY DEMO
+         ====================================================== -->
+    <section class="section" id="query" aria-label="Platform query demo">
+
+      <div class="section__heading">
+        Platform <span>query</span>
+      </div>
+      <p class="section__subtitle">
+        what the platform sends · what the device returns · what stays private
+      </p>
+
+      <div class="query-layout">
+
+        <!-- PLATFORM PANEL -->
+        <div class="query-panel">
+          <div class="query-panel__header">
+            <div class="query-panel__dot query-panel__dot--blue"></div>
+            <div class="query-panel__title">Platform request</div>
+          </div>
+          <div class="query-panel__body">
+            <div class="qfield-label">Platform</div>
+            <div class="qfield-value">forum.example.com</div>
+            <div class="qfield-label">API key</div>
+            <div class="qfield-value">mk_live_••••••••3f9a</div>
+            <div class="qfield-label">Query type</div>
+            <select id="queryType" class="qfield-select">
+              <option value="tier">Tier check — is user Tier 3+?</option>
+              <option value="score">Score threshold — E[trust] above 0.7?</option>
+              <option value="nfc">NFC minimum — 5+ handshakes?</option>
+            </select>
+            <div class="qfield-label">Session token</div>
+            <div class="qfield-value qfield-value--tiny">sess_7f3a9c2b1d8e4f6a0b5c3d2e1f9a8b7c</div>
+            <div class="qfield-label">Query preview</div>
+            <div class="query-preview" id="queryPreview"></div>
+          </div>
+        </div>
+
+        <!-- DEVICE PANEL -->
+        <div class="query-panel">
+          <div class="query-panel__header">
+            <div class="query-panel__dot query-panel__dot--teal"></div>
+            <div class="query-panel__title">User device</div>
+          </div>
+          <div class="query-panel__body">
+            <div class="qfield-label">Account</div>
+            <div class="qfield-value">@jordanm</div>
+            <div class="qfield-label">Trust score</div>
+            <div class="qfield-value qfield-value--teal">E[trust] = 0.742 <span class="qfield-aside">on-device only</span></div>
+            <div class="qfield-label">Current tier</div>
+            <div class="qfield-value qfield-value--teal">Tier 3 — Verified citizen</div>
+            <div class="qfield-label">NFC handshakes</div>
+            <div class="qfield-value qfield-value--teal">14 verified</div>
+            <div class="qfield-label">What platform receives</div>
+            <div class="qfield-value qfield-value--private">None of the above.<br>Only the signed ZK proof.</div>
+          </div>
+        </div>
+
+      </div><!-- /query-layout -->
+
+      <button class="btn btn--primary" id="runBtn">
+        Send verification query
+      </button>
+
+      <div class="query-terminal" id="terminal"></div>
+
+      <div class="query-result" id="resultPanel">
+        <div class="query-result__header">
+          <div class="query-result__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 6L9 17l-5-5"/>
+            </svg>
+          </div>
+          <div>
+            <div class="query-result__title">Verification passed</div>
+            <div class="query-result__sub">Human verified · access granted</div>
+          </div>
+          <div class="query-result__time" id="resultTime">—</div>
+        </div>
+        <div class="query-result__body">
+          <div class="query-result__row"><span class="query-result__key">verified</span><span class="query-result__val query-result__val--teal" id="rVerified">—</span></div>
+          <div class="query-result__row"><span class="query-result__key">query</span><span class="query-result__val" id="rQuery">—</span></div>
+          <div class="query-result__row"><span class="query-result__key">proof_id</span><span class="query-result__val query-result__val--muted" id="rProof">—</span></div>
+          <div class="query-result__row"><span class="query-result__key">expires</span><span class="query-result__val query-result__val--muted" id="rExpires">—</span></div>
+          <div class="query-result__row"><span class="query-result__key">score_disclosed</span><span class="query-result__val query-result__val--muted">false</span></div>
+          <div class="query-result__row"><span class="query-result__key">data_retained</span><span class="query-result__val query-result__val--muted">false</span></div>
+        </div>
+        <div class="query-result__sig-row">
+          <div class="query-result__sig-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+            signature_verified
+            <span class="query-result__sig-note">— forged "verified: true" fails here</span>
+          </div>
+          <div class="query-result__sig-val" id="rSigVerified">—</div>
+        </div>
+      </div><!-- /query-result -->
+
+      <p class="query-privacy-note" id="privacyNote">
+        <strong>The platform received exactly one bit of information.</strong><br>
+        Score, tier, and handshake count remain on-device. The signature check
+        means a forged response is cryptographically impossible to fake.
+      </p>
+
+      <button class="btn btn--ghost" id="resetBtn">Run another query</button>
+
+    </section><!-- /#query -->
+
+
     <!-- FOOTER -->
     <div class="demo-footer">
       Manatee Protocol — pre-launch working draft<br>
@@ -391,6 +508,7 @@
   <script type="module" src="js/theme.js"></script>
   <script type="module" src="js/demo.js"></script>
   <script type="module" src="js/feed.js"></script>
+  <script type="module" src="js/query.js"></script>
 
 </body>
 </html>
