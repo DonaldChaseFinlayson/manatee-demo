@@ -226,8 +226,5 @@ function resetDemo() {
 dom.queryType.addEventListener('change', updatePreview);
 dom.runBtn.addEventListener('click', runQuery);
 
-const queryReset = document.querySelector('#query .section-reset');
-if (queryReset) queryReset.addEventListener('click', resetDemo);
-
 // Initialize preview on load
 updatePreview();

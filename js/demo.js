@@ -291,7 +291,3 @@ export function resetDemo() {
    ------------------------------------------------------------ */
 
 dom.tapBtn.addEventListener('click', startDemo);
-
-// The reset button lives at the bottom of the section — shown by fab.js
-const handshakeReset = document.querySelector('#handshake .section-reset');
-if (handshakeReset) handshakeReset.addEventListener('click', resetDemo);
