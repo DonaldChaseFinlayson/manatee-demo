@@ -4,34 +4,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Manatee Protocol — NFC Handshake Demo</title>
+  <title>Manatee Protocol — Demo</title>
 
-  <!--
-    Google Fonts — loaded first so text renders correctly
-    DM Sans:    Clean, modern sans-serif for UI text
-    DM Mono:    Monospaced for score readouts and tech labels
-    display=swap means the page shows fallback fonts immediately
-    while these load, rather than showing blank text.
-  -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 
   <!--
-    Stylesheets — order matters.
-    main.css loads first (defines variables and resets).
-    components.css loads second (uses those variables).
+    Stylesheet load order matters:
+    1. main.css       — CSS custom properties and reset (no dependencies)
+    2. components.css — shared components (depends on main.css variables)
+    3. feed.css       — feed-specific components (depends on main.css variables)
   -->
   <link rel="stylesheet" href="css/main.css">
   <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/feed.css">
 </head>
 
 <body>
 
-  <!--
-    .max-w-demo constrains width to 440px and centers the content.
-    All layout utility classes are defined in main.css.
-  -->
   <div class="max-w-demo flex flex-col items-center">
 
     <!-- WORDMARK -->
@@ -39,209 +30,337 @@
       M · <span class="wordmark__accent">Manatee</span> · Protocol
     </div>
 
-    <!-- BUTTONS
-         tapBtn  — starts the demo, visible by default
-         resetBtn — resets the demo, hidden by default
-         JS in demo.js swaps their visibility after each run
+    <!--
+      NAV
+      Two anchor links that smooth-scroll to each section via
+      scroll-behavior: smooth set on html in main.css.
+      feed.js updates the --active class as the user scrolls.
     -->
-    <div class="flex gap-3 w-full" style="margin-bottom: 24px;">
-      <button class="btn btn--ghost btn--hidden" id="resetBtn">
-        Reset demo
-      </button>
-      <button class="btn btn--primary" id="tapBtn">
-        Simulate NFC tap
-      </button>
-    </div>
+    <nav class="demo-nav" aria-label="Demo sections">
+      <a href="#handshake" class="demo-nav__link demo-nav__link--active">
+        NFC handshake
+      </a>
+      <a href="#badge" class="demo-nav__link">
+        Three states
+      </a>
+    </nav>
 
-    <!-- PHONE STAGE
-         Two phones side by side with a connector between them.
-         JS adds phone-wrap--left / phone-wrap--right to move
-         them toward each other during the handshake animation.
-    -->
-    <div class="flex items-center" style="margin-bottom: 24px; width: 100%;">
 
-      <!-- JORDAN'S PHONE (unverified at start) -->
-      <div class="phone-wrap" id="phoneWrapA">
-        <div class="phone">
+    <!-- ======================================================
+         SECTION 1: NFC HANDSHAKE DEMO
+         ====================================================== -->
+    <section class="section" id="handshake" aria-label="NFC handshake demo">
 
-          <!-- Flash overlay — briefly visible on NFC contact -->
-          <div class="phone__flash" id="flashA"></div>
+      <div class="section__heading">
+        NFC <span>handshake</span> verification
+      </div>
+      <p class="section__subtitle">
+        two phones · four centimeters · one cryptographic proof
+      </p>
 
-          <!-- Notch -->
-          <div class="phone__notch"></div>
+      <!-- BUTTONS -->
+      <div class="flex gap-3 w-full" style="margin-bottom: 24px;">
+        <button class="btn btn--ghost btn--hidden" id="resetBtn">
+          Reset demo
+        </button>
+        <button class="btn btn--primary" id="tapBtn">
+          Simulate NFC tap
+        </button>
+      </div>
 
-          <!-- Screen content -->
-          <div class="phone__screen">
+      <!-- PHONE STAGE -->
+      <div class="flex items-center" style="margin-bottom: 24px; width: 100%;">
 
-            <div class="phone__header">
-              <span class="phone__app-name">Manatee</span>
-              <div class="phone__signal">
-                <div class="phone__signal-dot phone__signal-dot--on"></div>
-                <div class="phone__signal-dot phone__signal-dot--on"></div>
-                <div class="phone__signal-dot"></div>
+        <!-- JORDAN'S PHONE -->
+        <div class="phone-wrap" id="phoneWrapA">
+          <div class="phone">
+            <div class="phone__flash" id="flashA"></div>
+            <div class="phone__notch"></div>
+            <div class="phone__screen">
+              <div class="phone__header">
+                <span class="phone__app-name">Manatee</span>
+                <div class="phone__signal">
+                  <div class="phone__signal-dot phone__signal-dot--on"></div>
+                  <div class="phone__signal-dot phone__signal-dot--on"></div>
+                  <div class="phone__signal-dot"></div>
+                </div>
+              </div>
+              <div class="phone__profile">
+                <div class="avatar avatar--teal">
+                  J
+                  <div class="avatar__ring" id="ringA"></div>
+                </div>
+                <div class="phone__app-name" style="font-size: 11px; letter-spacing: 0;">Jordan M.</div>
+                <div class="phone__score-label" style="font-size: 8px;">@jordanm · 2024</div>
+                <div class="badge badge--unverified" id="badgeA">Unverified</div>
+                <div class="proof-pill" id="proofA">zk·proof·issued</div>
+              </div>
+              <div class="phone__score-area">
+                <div class="phone__score-label">Trust score</div>
+                <div class="phone__score-bar">
+                  <div class="phone__score-fill" id="scoreFillA"></div>
+                </div>
+                <div class="phone__score-number" id="scoreNumberA">E[trust] = 0.333</div>
               </div>
             </div>
-
-            <div class="phone__profile">
-              <div class="avatar avatar--teal">
-                J
-                <!-- Ring becomes visible after verification -->
-                <div class="avatar__ring" id="ringA"></div>
-              </div>
-              <div class="phone__app-name" style="font-size: 11px; letter-spacing: 0;">Jordan M.</div>
-              <div class="phone__score-label" style="font-size: 8px;">@jordanm · 2024</div>
-              <!-- Badge starts unverified, JS flips it to verified -->
-              <div class="badge badge--unverified" id="badgeA">Unverified</div>
-              <!-- Proof pill — hidden until ZK proof is issued -->
-              <div class="proof-pill" id="proofA">zk·proof·issued</div>
+            <div class="nfc-zone" id="nfcA">
+              <div class="nfc-ring nfc-ring--sm"></div>
+              <div class="nfc-ring nfc-ring--md"></div>
+              <div class="nfc-ring nfc-ring--lg"></div>
             </div>
-
-            <div class="phone__score-area">
-              <div class="phone__score-label">Trust score</div>
-              <div class="phone__score-bar">
-                <!-- Width animated by JS via animateValue() -->
-                <div class="phone__score-fill" id="scoreFillA"></div>
-              </div>
-              <!-- Score number — updated each frame by animateValue() -->
-              <div class="phone__score-number" id="scoreNumberA">E[trust] = 0.333</div>
-            </div>
-
-          </div><!-- /phone__screen -->
-
-          <!-- NFC animation zone — rings pulse during handshake -->
-          <div class="nfc-zone" id="nfcA">
-            <div class="nfc-ring nfc-ring--sm"></div>
-            <div class="nfc-ring nfc-ring--md"></div>
-            <div class="nfc-ring nfc-ring--lg"></div>
           </div>
-
-        </div><!-- /phone -->
-        <span style="font-size: 11px; color: var(--color-text-muted); font-weight: 500;">Jordan</span>
-      </div><!-- /phone-wrap -->
-
-
-      <!-- CENTER CONNECTOR -->
-      <div class="connector">
-        <div class="connector__icon" id="connectorIcon">
-          <!-- Arrow icon — SVG inline for no HTTP request -->
-          <svg viewBox="0 0 24 24">
-            <path d="M5 12h14M12 5l7 7-7 7"/>
-          </svg>
+          <span style="font-size: 11px; color: var(--color-text-muted); font-weight: 500;">Jordan</span>
         </div>
-        <div class="connector__label" id="connectorLabel">
-          tap to<br>verify
-        </div>
-      </div>
 
-
-      <!-- SAM'S PHONE (already verified) -->
-      <div class="phone-wrap" id="phoneWrapB">
-        <div class="phone">
-
-          <div class="phone__flash" id="flashB"></div>
-          <div class="phone__notch"></div>
-
-          <div class="phone__screen">
-
-            <div class="phone__header">
-              <span class="phone__app-name">Manatee</span>
-              <div class="phone__signal">
-                <div class="phone__signal-dot phone__signal-dot--on"></div>
-                <div class="phone__signal-dot phone__signal-dot--on"></div>
-                <div class="phone__signal-dot phone__signal-dot--on"></div>
-              </div>
-            </div>
-
-            <div class="phone__profile">
-              <div class="avatar avatar--purple">
-                S
-                <!-- Sam is already verified — ring starts active -->
-                <div class="avatar__ring avatar__ring--verified" id="ringB"></div>
-              </div>
-              <div class="phone__app-name" style="font-size: 11px; letter-spacing: 0;">Sam K.</div>
-              <div class="phone__score-label" style="font-size: 8px;">@samk · 2023</div>
-              <!-- Sam's badge is already verified -->
-              <div class="badge badge--verified" id="badgeB">Verified</div>
-              <div class="proof-pill" id="proofB">zk·proof·issued</div>
-            </div>
-
-            <div class="phone__score-area">
-              <div class="phone__score-label">Trust score</div>
-              <div class="phone__score-bar">
-                <!-- Sam starts at 68% — set inline here as initial state -->
-                <div class="phone__score-fill phone__score-number--lit" id="scoreFillB" style="width: 68%;"></div>
-              </div>
-              <div class="phone__score-number phone__score-number--lit" id="scoreNumberB">E[trust] = 0.742</div>
-            </div>
-
-          </div><!-- /phone__screen -->
-
-          <div class="nfc-zone" id="nfcB">
-            <div class="nfc-ring nfc-ring--sm"></div>
-            <div class="nfc-ring nfc-ring--md"></div>
-            <div class="nfc-ring nfc-ring--lg"></div>
+        <!-- CENTER CONNECTOR -->
+        <div class="connector">
+          <div class="connector__icon" id="connectorIcon">
+            <svg viewBox="0 0 24 24">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
           </div>
-
-        </div><!-- /phone -->
-        <span style="font-size: 11px; color: var(--color-text-muted); font-weight: 500;">Sam</span>
-      </div><!-- /phone-wrap -->
-
-    </div><!-- /stage -->
-
-
-    <!-- STATUS PANEL
-         Four verification steps with timestamps.
-         Each row starts as status-row--pending.
-         JS calls setStatusRow() to transition them through
-         pending → active → done as the demo progresses.
-    -->
-    <div class="status-panel">
-
-      <div class="status-row status-row--pending" id="step1">
-        <div class="status-row__icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="9"/>
-            <path d="M12 8v4l3 3"/>
-          </svg>
+          <div class="connector__label" id="connectorLabel">
+            tap to<br>verify
+          </div>
         </div>
-        <div class="status-row__text">Waiting for NFC handshake</div>
-        <div class="status-row__time" id="time1">—</div>
+
+        <!-- SAM'S PHONE -->
+        <div class="phone-wrap" id="phoneWrapB">
+          <div class="phone">
+            <div class="phone__flash" id="flashB"></div>
+            <div class="phone__notch"></div>
+            <div class="phone__screen">
+              <div class="phone__header">
+                <span class="phone__app-name">Manatee</span>
+                <div class="phone__signal">
+                  <div class="phone__signal-dot phone__signal-dot--on"></div>
+                  <div class="phone__signal-dot phone__signal-dot--on"></div>
+                  <div class="phone__signal-dot phone__signal-dot--on"></div>
+                </div>
+              </div>
+              <div class="phone__profile">
+                <div class="avatar avatar--purple">
+                  S
+                  <div class="avatar__ring avatar__ring--verified" id="ringB"></div>
+                </div>
+                <div class="phone__app-name" style="font-size: 11px; letter-spacing: 0;">Sam K.</div>
+                <div class="phone__score-label" style="font-size: 8px;">@samk · 2023</div>
+                <div class="badge badge--verified" id="badgeB">Verified</div>
+                <div class="proof-pill" id="proofB">zk·proof·issued</div>
+              </div>
+              <div class="phone__score-area">
+                <div class="phone__score-label">Trust score</div>
+                <div class="phone__score-bar">
+                  <div class="phone__score-fill phone__score-number--lit" id="scoreFillB" style="width: 68%;"></div>
+                </div>
+                <div class="phone__score-number phone__score-number--lit" id="scoreNumberB">E[trust] = 0.742</div>
+              </div>
+            </div>
+            <div class="nfc-zone" id="nfcB">
+              <div class="nfc-ring nfc-ring--sm"></div>
+              <div class="nfc-ring nfc-ring--md"></div>
+              <div class="nfc-ring nfc-ring--lg"></div>
+            </div>
+          </div>
+          <span style="font-size: 11px; color: var(--color-text-muted); font-weight: 500;">Sam</span>
+        </div>
+
+      </div><!-- /stage -->
+
+      <!-- STATUS PANEL -->
+      <div class="status-panel">
+        <div class="status-row status-row--pending" id="step1">
+          <div class="status-row__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3"/>
+            </svg>
+          </div>
+          <div class="status-row__text">Waiting for NFC handshake</div>
+          <div class="status-row__time" id="time1">—</div>
+        </div>
+        <div class="status-row status-row--pending" id="step2">
+          <div class="status-row__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3"/>
+            </svg>
+          </div>
+          <div class="status-row__text">Verifying co-presence proof</div>
+          <div class="status-row__time" id="time2">—</div>
+        </div>
+        <div class="status-row status-row--pending" id="step3">
+          <div class="status-row__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3"/>
+            </svg>
+          </div>
+          <div class="status-row__text">Updating trust graph</div>
+          <div class="status-row__time" id="time3">—</div>
+        </div>
+        <div class="status-row status-row--pending" id="step4">
+          <div class="status-row__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3"/>
+            </svg>
+          </div>
+          <div class="status-row__text">ZK proof issued — score stays on device</div>
+          <div class="status-row__time" id="time4">—</div>
+        </div>
       </div>
 
-      <div class="status-row status-row--pending" id="step2">
-        <div class="status-row__icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="9"/>
-            <path d="M12 8v4l3 3"/>
-          </svg>
+    </section><!-- /#handshake -->
+
+
+    <!-- SECTION DIVIDER -->
+    <div class="section__divider"></div>
+
+
+    <!-- ======================================================
+         SECTION 2: THREE STATE ATTRIBUTION DEMO
+         ====================================================== -->
+    <section class="section" id="badge" aria-label="Three state attribution demo">
+
+      <div class="section__heading">
+        Three <span>states</span>
+      </div>
+      <p class="section__subtitle">
+        hover the badges to learn what each state means
+      </p>
+
+      <!-- SOCIAL FEED -->
+      <div class="feed" role="feed" aria-label="Example social posts">
+
+        <!-- POST 1: VERIFIED HUMAN -->
+        <article class="post">
+          <div class="post__header">
+            <div class="post__avatar post__avatar--teal">J</div>
+            <div class="post__meta">
+              <div class="post__name-row">
+                <span class="post__name">Jordan M.</span>
+                <span
+                  class="manatee-badge manatee-badge--verified"
+                  data-tooltip="Score above threshold · ZK proof confirmed · NFC-verified"
+                  role="status"
+                  aria-label="Verified human account"
+                >
+                  <span class="manatee-badge__dot"></span>
+                  Verified human
+                  <span class="manatee-badge__tooltip" aria-hidden="true"></span>
+                </span>
+                <span class="post__time">2m</span>
+              </div>
+              <div class="post__handle">@jordanm</div>
+            </div>
+          </div>
+          <p class="post__body">
+            The Manatee protocol just verified me in under two seconds.
+            No ID. No iris scan. Just tapped phones with a friend.
+            This is what privacy-preserving identity looks like.
+          </p>
+          <div class="post__actions">
+            <div class="post__action"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>14</div>
+            <div class="post__action"><svg viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>38</div>
+            <div class="post__action"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>91</div>
+          </div>
+        </article>
+
+        <!-- POST 2: NOT VERIFIED -->
+        <article class="post">
+          <div class="post__header">
+            <div class="post__avatar post__avatar--gray">A</div>
+            <div class="post__meta">
+              <div class="post__name-row">
+                <span class="post__name">Alex P.</span>
+                <span
+                  class="manatee-badge manatee-badge--unverified"
+                  data-tooltip="No Manatee badge · may be human, may not be"
+                  role="status"
+                  aria-label="Unverified account"
+                >
+                  <span class="manatee-badge__dot"></span>
+                  Not verified
+                  <span class="manatee-badge__tooltip" aria-hidden="true"></span>
+                </span>
+                <span class="post__time">18m</span>
+              </div>
+              <div class="post__handle">@alexp</div>
+            </div>
+          </div>
+          <p class="post__body">
+            Interesting thread. Haven't tried Manatee yet —
+            does it work if you don't know anyone already on it?
+          </p>
+          <div class="post__actions">
+            <div class="post__action"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>2</div>
+            <div class="post__action"><svg viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>5</div>
+            <div class="post__action"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>7</div>
+          </div>
+        </article>
+
+        <!-- POST 3: LIKELY BOT -->
+        <article class="post post--bot">
+          <div class="post__header">
+            <div class="post__avatar post__avatar--coral">X</div>
+            <div class="post__meta">
+              <div class="post__name-row">
+                <span class="post__name">XRT_Promo99</span>
+                <span
+                  class="manatee-badge manatee-badge--bot"
+                  data-tooltip="Active warning · flagged by trust graph · contestable"
+                  role="status"
+                  aria-label="Likely bot account"
+                >
+                  <span class="manatee-badge__dot"></span>
+                  Likely bot
+                  <span class="manatee-badge__tooltip" aria-hidden="true"></span>
+                </span>
+                <span class="post__time">34m</span>
+              </div>
+              <div class="post__handle">@xrt_promo99</div>
+            </div>
+          </div>
+          <div class="bot-banner" role="alert">
+            <svg viewBox="0 0 24 24">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+              <line x1="12" y1="9" x2="12" y2="13"/>
+              <line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+            <p class="bot-banner__text">
+              <strong>Manatee flagged this account.</strong>
+              The trust graph has identified signals inconsistent with human behavior.
+              The account has 72 hours to contest this flag.
+            </p>
+          </div>
+          <p class="post__body">
+            🚀 HUGE opportunity!! Limited time crypto airdrop — claim your $4,800
+            before midnight. DM me NOW. This is NOT a drill.
+            100% legit verified by top analysts 🔥🔥
+          </p>
+          <div class="post__actions">
+            <div class="post__action"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>0</div>
+            <div class="post__action"><svg viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>0</div>
+            <div class="post__action"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>0</div>
+          </div>
+        </article>
+
+      </div><!-- /feed -->
+
+      <!-- STATE LEGEND -->
+      <div class="state-legend">
+        <div class="state-legend__item">
+          <div class="state-legend__dot state-legend__dot--verified"></div>
+          Verified human
         </div>
-        <div class="status-row__text">Verifying co-presence proof</div>
-        <div class="status-row__time" id="time2">—</div>
+        <div class="state-legend__item">
+          <div class="state-legend__dot state-legend__dot--unverified"></div>
+          Not verified
+        </div>
+        <div class="state-legend__item">
+          <div class="state-legend__dot state-legend__dot--bot"></div>
+          Likely bot
+        </div>
       </div>
 
-      <div class="status-row status-row--pending" id="step3">
-        <div class="status-row__icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="9"/>
-            <path d="M12 8v4l3 3"/>
-          </svg>
-        </div>
-        <div class="status-row__text">Updating trust graph</div>
-        <div class="status-row__time" id="time3">—</div>
-      </div>
-
-      <div class="status-row status-row--pending" id="step4">
-        <div class="status-row__icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="9"/>
-            <path d="M12 8v4l3 3"/>
-          </svg>
-        </div>
-        <div class="status-row__text">ZK proof issued — score stays on device</div>
-        <div class="status-row__time" id="time4">—</div>
-      </div>
-
-    </div><!-- /status-panel -->
+    </section><!-- /#badge -->
 
 
     <!-- FOOTER -->
@@ -257,12 +376,13 @@
 
 
   <!--
-    Script loaded at the END of the body, after all HTML is parsed.
-    type="module" enables ES module syntax (import/export).
-    It also automatically defers execution until the DOM is ready,
-    so we don't need a DOMContentLoaded wrapper in demo.js.
+    Scripts at end of body — DOM is fully parsed.
+    type="module" enables import/export and auto-defers execution.
+    demo.js — NFC handshake animation
+    feed.js — tooltip population and nav scroll highlighting
   -->
   <script type="module" src="js/demo.js"></script>
+  <script type="module" src="js/feed.js"></script>
 
 </body>
 </html>
