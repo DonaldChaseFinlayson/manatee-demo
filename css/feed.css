@@ -56,10 +56,26 @@
   gap: var(--space-2);
   width: 100%;
   margin-bottom: var(--space-8);
-  background: var(--color-surface);
   border-radius: var(--radius-md);
   padding: var(--space-1);
   border: 1px solid var(--color-border);
+
+  /*
+    Sticky positioning keeps the nav visible as the user scrolls.
+    top: 16px gives breathing room from the viewport edge.
+    z-index: 100 ensures it floats above all other content.
+  */
+  position: sticky;
+  top: 16px;
+  z-index: 100;
+
+  /*
+    Semi-transparent background with blur so content scrolling
+    behind doesn't create a hard edge. rgba lets the blur show.
+  */
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px); /* Safari */
 }
 
 .demo-nav__link {
