@@ -194,11 +194,11 @@
 }
 
 /* 12 o'clock */
-.fab-container--open .fab-item:nth-child(1) { bottom: 86px; right: 0px;  }
+.fab-container--open .fab-item:nth-child(1) { bottom: 0px; right: 80px;  }
 /* 10:30 o'clock */
-.fab-container--open .fab-item:nth-child(2) { bottom: 62px; right: 62px; }
+.fab-container--open .fab-item:nth-child(2) { bottom: 56px; right: 56px; }
 /* 9 o'clock */
-.fab-container--open .fab-item:nth-child(3) { bottom: 0px;  right: 86px; }
+.fab-container--open .fab-item:nth-child(3) { bottom: 80px;  right: 0px; }
 
 /* Label pill */
 .fab-item__label {
@@ -210,9 +210,20 @@
   border-radius: var(--radius-full);
   padding: 4px 10px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  opacity: 0;
+  transition: opacity 0.15s ease;
   pointer-events: none;
 }
-
+/* Show on hover - desktop */
+.fab-item:hover .fab-item__label
+  opacity: 1;
+}
+/* Always show label on mobile touch devices */
+@media (hover:none){
+  .fab-item__label {
+    opacity: 1;
+  }
+}
 /* Icon button */
 .fab-item__btn {
   width: 40px;
