@@ -25,14 +25,11 @@
 
 <body>
 
-  <button class="theme-toggle" id="themeToggle" aria-label="Switch theme" title="Switch theme">
-    <svg viewBox="0 0 24 24"></svg>
-  </button>
-
   <!--
     FAB RADIAL NAV — lower right corner.
-    Tap to open three section buttons that fan out radially.
-    fab.js handles open/close and active state.
+    Theme toggle and reset sit above it in the stack.
+    DOM order: FAB → backdrop → theme → reset
+    The CSS ~ sibling selector hides theme toggle when FAB is open.
   -->
   <div class="fab-container" id="fabContainer">
     <div class="fab-items">
@@ -64,10 +61,15 @@
     </button>
   </div>
 
-  <!-- Backdrop closes the FAB menu when tapped outside -->
+  <!-- Backdrop -->
   <div class="fab-backdrop" id="fabBackdrop"></div>
 
-  <!-- Floating refresh button — bottom left, appears when any demo is running -->
+  <!-- Theme toggle — above FAB, hidden when FAB opens -->
+  <button class="theme-toggle" id="themeToggle" aria-label="Switch theme" title="Switch theme">
+    <svg viewBox="0 0 24 24"></svg>
+  </button>
+
+  <!-- Reset button — above theme toggle, shown when demo is running -->
   <button class="fab-refresh" id="fabRefresh" aria-label="Reset demo" title="Reset demo">
     <svg viewBox="0 0 24 24">
       <polyline points="1 4 1 10 7 10"/>

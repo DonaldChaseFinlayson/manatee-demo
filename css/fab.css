@@ -1,5 +1,13 @@
-/* fab.css — radial FAB nav + floating refresh */
+/* fab.css — right-side button stack + true radial FAB */
 
+
+/* ============================================================
+   RIGHT SIDE BUTTON STACK
+   Bottom to top: FAB → theme toggle → reset
+   All fixed right: 20px, centered on same vertical axis.
+   ============================================================ */
+
+/* FAB container — anchor for absolutely-positioned radial items */
 .fab-container {
   position: fixed;
   bottom: 24px;
@@ -8,6 +16,93 @@
   width: 52px;
   height: 52px;
 }
+
+/* Theme toggle — sits above FAB */
+.theme-toggle {
+  position: fixed;
+  bottom: 84px;   /* 24 + 52 + 8 */
+  right: 28px;    /* right-align center with FAB center (20 + 26 - 18) */
+  z-index: 300;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--transition-base),
+              opacity 0.2s ease,
+              transform 0.2s ease;
+}
+
+.theme-toggle:hover { background: var(--color-bg); }
+
+.theme-toggle svg {
+  width: 16px;
+  height: 16px;
+  stroke: var(--color-text-muted);
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Hide theme toggle when FAB is open */
+.fab-container--open ~ .theme-toggle,
+.theme-toggle--hidden {
+  opacity: 0;
+  transform: scale(0.7);
+  pointer-events: none;
+}
+
+/* Reset button — sits above theme toggle */
+.fab-refresh {
+  position: fixed;
+  bottom: 136px;  /* 84 + 36 + 8 + 8 */
+  right: 24px;    /* right-align center with FAB center */
+  z-index: 300;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  opacity: 0;
+  transform: scale(0.7);
+  pointer-events: none;
+  transition: background var(--transition-fast),
+              opacity 0.25s ease,
+              transform 0.25s ease;
+}
+.fab-refresh:hover { background: var(--color-bg); }
+.fab-refresh svg {
+  width: 16px;
+  height: 16px;
+  stroke: var(--color-text-muted);
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.fab-refresh:hover svg { stroke: var(--color-text); }
+.fab-refresh--visible {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: all;
+}
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
+.fab-refresh--spinning svg { animation: spin 0.5s ease; }
+
+
+/* ============================================================
+   FAB TRIGGER — hamburger → X
+   ============================================================ */
 
 .fab-trigger {
   position: absolute;
@@ -46,20 +141,31 @@
 .fab-container--open .fab-trigger__icon span:nth-child(2) { opacity: 0; transform: scaleX(0); }
 .fab-container--open .fab-trigger__icon span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
-/*
-  FAB ITEMS
-  Each item is absolutely positioned relative to .fab-container.
-  The item is a flex row: [label] [button]
-  button is always on the right (closest to FAB corner).
-  label floats to the left naturally.
-  Items start at center of FAB and animate to radial positions.
-*/
+
+/* ============================================================
+   FAB ITEMS — true radial from FAB center
+
+   FAB center = 26px from each edge of .fab-container.
+   Item .fab-item__btn = 40×40px.
+   To center btn on FAB center when closed:
+     right = 26 - 20 = 6px, bottom = 26 - 20 = 6px
+
+   Radius = 80px. Counter-clockwise from 12 o'clock:
+     Item 1 — 12 o'clock (90°):
+       btn center: (26, 26+80) → right:6,   bottom:86
+     Item 2 — 10 o'clock (120°):
+       btn center: (26-40, 26+69) → right:46, bottom:75
+     Item 3 — 8 o'clock (150°):
+       btn center: (26-69, 26+40) → right:75, bottom:46
+
+   Items are row-reverse (btn first in DOM = renders on right,
+   label extends leftward).
+   ============================================================ */
+
 .fab-item {
   position: absolute;
-  /* Start centered on the FAB button (26 = half of 52px FAB) */
   bottom: 6px;
   right: 6px;
-  /* Flex row with button on right, label on left */
   display: flex;
   flex-direction: row-reverse;
   align-items: center;
@@ -74,13 +180,12 @@
     opacity 0.22s ease,
     transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1),
     bottom 0.28s cubic-bezier(0.34, 1.56, 0.64, 1),
-    right 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+    right  0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* Stagger: item 1 (nearest top) last so it feels like a fan */
-.fab-item:nth-child(1) { transition-delay: 0.08s; }
+.fab-item:nth-child(1) { transition-delay: 0.00s; }
 .fab-item:nth-child(2) { transition-delay: 0.04s; }
-.fab-item:nth-child(3) { transition-delay: 0.00s; }
+.fab-item:nth-child(3) { transition-delay: 0.08s; }
 
 .fab-container--open .fab-item {
   opacity: 1;
@@ -88,17 +193,12 @@
   pointer-events: all;
 }
 
-/*
-  Radial positions — button stays anchored at right/bottom,
-  label extends further left. right/bottom values position
-  the button circle, label grows leftward automatically.
-  Item 1: straight up
-  Item 2: upper-left diagonal
-  Item 3: hard left
-*/
-.fab-container--open .fab-item:nth-child(1) { bottom: 100px; right: 6px; }
-.fab-container--open .fab-item:nth-child(2) { bottom: 76px;  right: 66px; }
-.fab-container--open .fab-item:nth-child(3) { bottom: 20px;  right: 62px; }
+/* 12 o'clock */
+.fab-container--open .fab-item:nth-child(1) { bottom: 86px; right: 6px; }
+/* 10 o'clock */
+.fab-container--open .fab-item:nth-child(2) { bottom: 75px; right: 46px; }
+/* 8 o'clock */
+.fab-container--open .fab-item:nth-child(3) { bottom: 46px; right: 75px; }
 
 /* Label pill */
 .fab-item__label {
@@ -113,7 +213,7 @@
   pointer-events: none;
 }
 
-/* Icon button — always rightmost in the flex row */
+/* Icon button */
 .fab-item__btn {
   width: 40px;
   height: 40px;
@@ -155,40 +255,3 @@
   display: none;
 }
 .fab-backdrop--visible { display: block; }
-
-/* Floating refresh — bottom left */
-.fab-refresh {
-  position: fixed;
-  bottom: 24px;
-  left: 20px;
-  z-index: 300;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  opacity: 0;
-  transform: scale(0.7);
-  pointer-events: none;
-  transition: background var(--transition-fast), opacity 0.25s ease, transform 0.25s ease;
-}
-.fab-refresh:hover { background: var(--color-bg); }
-.fab-refresh svg {
-  width: 16px;
-  height: 16px;
-  stroke: var(--color-text-muted);
-  fill: none;
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-.fab-refresh:hover svg { stroke: var(--color-text); }
-.fab-refresh--visible { opacity: 1; transform: scale(1); pointer-events: all; }
-
-@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
-.fab-refresh--spinning svg { animation: spin 0.5s ease; }
